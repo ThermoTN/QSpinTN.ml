@@ -30,8 +30,8 @@ Rslt.En = GetEn(EnV.A{2}, H, rho);
 Rslt.TrunErr = 0;
 Rslt.EE = 0;
 % Para.beta_max = 20;
-[rho, Rslt, EnV] = twosite_tdvp(rho, H, Para, Rslt, Op, EnV);
-[rho, Rslt] = onesite_tdvp(rho, H, Para, Rslt, Op, EnV);
+[rho, Rslt, EnV] = twosite_tanTRG(rho, H, Para, Rslt, Op, EnV);
+[rho, Rslt] = onesite_tanTRG(rho, H, Para, Rslt, Op, EnV);
 Rslt.EE = Rslt.EE(2:end-1);
 Rslt.TrunErr = Rslt.TrunErr(2:end-1);
 % if Judge == 1

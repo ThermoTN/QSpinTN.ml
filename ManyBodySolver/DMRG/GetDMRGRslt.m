@@ -8,7 +8,13 @@ else
     M = 0;
 end
 [Op.Sx, Op.Sy, Op.Sz, Op.Id] = SpinOp(Para.d);
-Rslt.T = T;
+
+try
+    if Para.saveMPS
+        Rslt.T = T;
+        Rslt.H = H;
+    end
+end
 Rslt.E0 = E0;
 Rslt.M = M;
 Rslt.Op = Op;

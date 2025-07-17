@@ -17,7 +17,7 @@ function [B, Info] = LanczosExp(F_handle, A, delta, varargin)
 
 P = inputParser;
 P.addParameter('K', 32, @(x) isnumeric(x) && x >= 1);
-P.addParameter('tol', 1e-8, @(x) isnumeric(x) && x > 0);
+P.addParameter('tol', 1e-14, @(x) isnumeric(x) && x > 0);
 P.addParameter('plus', @(x,y) plus(x,y), @(x) isa(x, 'function_handle'));
 P.addParameter('mtimes', @(x,y) mtimes(x,y), @(x) isa(x, 'function_handle'));
 P.addParameter('norm', @(x) norm(x), @(x) isa(x, 'function_handle'));

@@ -51,7 +51,17 @@ switch Para.ManyBodySolver
         
         rmpath(genpath('../ManyBodySolver/ED'));
         
-
+    case {'ED_SM'}
+        addpath(genpath('../ManyBodySolver/ED_SM'));
+        Rslt = GetEDSMRslt(Para);
+        
+        rmpath(genpath('../ManyBodySolver/ED_SM'));
+    case {'ED_C'}
+        addpath(genpath('../ManyBodySolver/ED_C'));
+        Rslt = GetEDCRslt(Para, ThDQ);
+        
+        rmpath(genpath('../ManyBodySolver/ED_C'));
+        
     case {'XTRG'}
         addpath(genpath('../ManyBodySolver/XTRG'));
         
@@ -72,7 +82,11 @@ switch Para.ManyBodySolver
         Rslt = GettanTRGRslt(Para);
         Rslt.betaOri = Rslt.beta;
         rmpath(genpath('../ManyBodySolver/tanTRG'));
-
+%     case {'CBEtanTRG'}
+%         addpath(genpath('../ManyBodySolver/CBEtanTRG'));
+%         
+%         Rslt = GetCBEtanTRGRslt(Para);
+%         rmpath(genpath('../ManyBodySolver/CBEtanTRG'));
     otherwise
         fprintf('Illegal mant-body solver! \n');
         keyboard;

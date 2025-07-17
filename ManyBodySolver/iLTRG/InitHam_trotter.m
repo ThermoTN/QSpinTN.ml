@@ -84,21 +84,27 @@ end
 % Hzb = kron(Id, Sz);
 
 if norm(Para.Field.h) ~= 0
-    g_fec = Para.g_fec.g;
-    g_dir = Para.g_fec.dir;
-    Sop = cell(1,3);
-    htilde = zeros(1,3);
-    for i = 1:3
-        gi_dir = g_dir{i};
-        Sop{i} = gi_dir(1) * Sx + gi_dir(2) * Sy + gi_dir(3) * Sz;
-        Sop{i} = kron(Sop{i}, Id) + kron(Id, Sop{i});
-        htilde(i) = g_fec(i) * sum(gi_dir .* Para.Field.hdir);
-        Sop{i} = Sop{i} * htilde(i);
+    try
+        g_fec = Para.g_fec.g;
+        g_dir = Para.g_fec.dir;
+        Sop = cell(1,3);
+        htilde = zeros(1,3);
+        for i = 1:3
+            gi_dir = g_dir{i};
+            Sop{i} = gi_dir(1) * Sx + gi_dir(2) * Sy + gi_dir(3) * Sz;
+            Sop{i} = kron(Sop{i}, Id) + kron(Id, Sop{i});
+            htilde(i) = g_fec(i) * sum(gi_dir .* Para.Field.hdir);
+            Sop{i} = Sop{i} * htilde(i);
+        end
+        
+        Hf = - 1/2 * Para.Field.h * (Sop{1} + Sop{2} + Sop{3});
+    catch
+        Sx = kron(Sx, Id) + kron(Id, Sx);
+        Sy = kron(Sy, Id) + kron(Id, Sy);
+        Sz = kron(Sz, Id) + kron(Id, Sz);
+        Hf = -1/2 * (Para.Field.h(1) * Sx + Para.Field.h(2) * Sy + Para.Field.h(3) * Sz);
     end
     
-    
-    
-    Hf = - 1/2 * Para.Field.h * (Sop{1} + Sop{2} + Sop{3});
     Hab = Hab + Hf;
     Hba = Hba + Hf;
 end

@@ -18,7 +18,7 @@ end
 
 % =========== Get Bond Dim Info ===========
 for i = 1:1:length(IntrMap)
-    if IntrMap(i).site(1)>0
+    if length(IntrMap(i).site) > 1
         BondInfo{IntrMap(i).site(1)}(2) = BondInfo{IntrMap(i).site(1)}(2) + 1;
         BondInfo{IntrMap(i).site(end)}(1) = BondInfo{IntrMap(i).site(end)}(1) + 1;
         if IntrMap(i).site(end) > IntrMap(i).site(1)+1
@@ -86,6 +86,7 @@ for i = 1:1:length(IntrMap)
 end
 H.A{1} = permute(H.A{1}, [2,3,4,1]);
 H.A{end} = permute(H.A{end}, [1,3,4,2]);
+
 if length(size(H.A{1})) == 4
     H.A{1} = H.A{1}(:,:,:,1);
 end
@@ -93,6 +94,7 @@ end
 if length(size(H.A{end})) == 4
     H.A{end} = H.A{end}(:,:,:,end);
 end
+
 H.lgnorm = 0;
 end
 

@@ -1,6 +1,6 @@
-# QSpinLib&QMagen (v1.0)
+# QSpinTN.ml (v0.0)
 ## Introduction ##
-QSpinLib&QMagen is a package for the many-body simulations of the spin system (both ground state and finite-temperature) and an advanced tool for thermal data analysis of magnetic quantum materials.
+QSpinTN.ml is a package for the many-body simulations of the spin system (both ground state and finite-temperature) and an advanced tool for thermal data analysis of magnetic quantum materials.
 The package consists of two main parts, i.e. QSpinLib and QMagen.
 
 ## QSpinLib part ##

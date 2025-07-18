@@ -12,11 +12,10 @@ $H=\sum_{i=1}^{L-1} J_{xy} (S_i^x S_{i+1}^x + S_i^y S_{i+1}^y) + J_z S_i^z S_{i+
 ## Script and parameter settings ##
 **Note: We have omitted the parameters that were mentioned earlier.**
 
-### RunQSpinLib_tanTRG.m ###
+### RunQSpinLib_DMRG.m ###
 
 * Set the many-body solver as DMRG and start calculation.
 ```matlab
-Para.ThDQ = 'Cm';
 Para.ManyBodySolver = 'DMRG';
 Para.fileID = 1;
 Para = ImportMBSolverPara(Para);

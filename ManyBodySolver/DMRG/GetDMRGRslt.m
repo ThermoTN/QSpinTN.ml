@@ -19,7 +19,7 @@ Rslt.E0 = E0;
 Rslt.M = M;
 Rslt.Op = Op;
 
-[Rslt.Obs] = Observe_ezLv(T.A);
+% [Rslt.Obs] = Observe_ezLv(T.A);
 
 end
 

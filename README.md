@@ -6,114 +6,53 @@ The package consists of two main parts, i.e. QSpinLib and QMagen.
 ## QSpinLib part ##
 Quantum spin library (QSpinLib) is a code library for both gound state and finite-temperature many-body calculation. 
 For some simple problems, we also provide the exact diagonalization method, and Hamiltonian matrix.
+
 ### Quantum Many-Body Sovlers ###
 * Exact diagonalization (ED, as a high-*T* solver);
 * Density matrix renormalization group (DMRG, as a ground state solver for quasi-1D and 2D magnets);
 * Linearized tensor renormalization group (LTRG, as a low-*T* solver for 1D spin chain materials, etc);
 * Exponential tensor renormalization group (XTRG, as a low-*T* solver for quasi-1D and 2D magnets, etc).
+* Tangent space tensor renormalization group (tanTRG, as a low-*T* solver for quasi-1D and 2D magnets, etc).
+
 ### Try Your First QSpinLib Program ###
-Here we give an example of the many-body calculation.
+Here we provide some examples in **Example/Example_QSpinlib_**\*.
+
+## QMagen part ##
+QMagen is a code library for learning the effective Hamiltonians of quantum materials from thermal data.
+
 ### Efficient Optimizers ###
 * Bayesian optimization.
 
-## Try Your First QMagen Program ##
-This program can be used in the following two typical circumstances (and possibly others):
-* Learning model Hamiltonian by automatically fitting experimental thermal data through the Bayesian optimization: \
-  **RunScript/RunOpt.m**;
-* Carrying out many-body calculations on specific model: \
-  **RunScript/RunMBSolver.m**.
+### Try Your First QMagen Program ###
+Here we provide some examples in **Example/Example_QMagen_**\*.
 
-Here we give an example of the automatic parameter searching.
-### Basic Configuration ###
-To start a QMagen job, one needs to firstly set the following parameters (**Para.**) in **RunScript/RunOpt.m**
-* **ManyBodySolver**\
-  To choose the many-body solver as **'ED'**, **'iLTRG'** or **'XTRG'**;
-* **ModelName**\
-  To choose the model of material, all the available models are given in **SpinModel**;
-* **Mode = 'OPT'**\
-  To choose the working mode as paremeter searching.
-### Experimental Data ###
-Import magnetic specific heat (**Cm**) and susceptibility (**Chi**) data.
-* **CmDataFile = {'FileName1'; ...}**\
-  To set the file name of magnetic specific heat data.\
-  The file should only contains a N-by-2 array where
-  the first column is temperature in Kelvin and
-  the second column is corresponding specific heat with
-  J mol^-1 K^-1.
-* **CmDataTRange = {[T1, T2]; ...}**\
-  To set the fitting temperature range of **Cm** data.
-* **CmDataField = {[B1x, B1y, B1z]; ...}**\
-  To give the magentic field strength (in Tesla) of experimental data.
-* **CmDatagInfo = {gNum1; ...}**
-  To set use which Lande factor to converse unit. Only required
-  when the Lande factors are not given along *Sx, Sy, Sz* direction. 
-* **ChiDataFile = {'FileName1'; ...}**\
-  To set the file name of magnetic susceptibility data.\
-  The file should only contain a N-by-2 array where
-  the firsl column is temperature (in a unit of Kelvin) 
-  and the second column lists the corresponding susceptibility 
-  data (in the SI unit cm^3 mol^-1).
-* **ChiDataTRange = {[T1, T2]; ...}**\
-  To set the fitting temperature range of corresponding **Chi** data.
-* **ChiDataField = {[B1x, B1y, B1z]; ...}**\
-  To give the magentic field strength (Tesla) of experimental data.
-* **ChiDatagInfo = {gNum1; ...}**
-  To set use which Lande factor to converse unit. Only required
-  when the Lande factors are not given along *Sx, Sy, Sz* direction. 
-### Model Information ###
-The lattice geometry and parameter optimization range (called **ModelConf.**) should be assigned in the file
-**SpinModel/SpinModel_*XXX*.m**.
-* **Lattice**\
-  To set the lattice geometry information :
-  * **.L = Inf** for 1D systems (currently we only support infinite-size LTRG for 1D)
-  * **.Lx**, **.Ly**, **.BCX**, **.BCY** for 2D systems (be reminded we support finite-size XTRG for 2D)
-* **Para_Range{i}**\
-  To set the range of **ModelConf.Para_Name{i}** 
-  * an interval **[a, b]**
-  * a fixed value **a**
-  * keep it the same as another model parameter **'J'**.
-* **gFactor_Range{i}**\
-  To set the range of **ModelConf.gFactor_Name{i}** like above.
-### Runtime parameters ###
-For beginners, we do not recommend changing the relevant parameters.
-* **RunScript/ImportMBSolverPara.m**\
-  To change the parameters of many-body solvers, including ED, LTRG, and XTRG.
-* **RunScript/ImportBOPara.m**\
-  To change the parameter of Bayesian optimization.
-### Loss Function ###
-We have provided several forms of the loss function, which one needs to select in **RunScript/RunOpt.m**.
-* **LossConf.WeightList**\
-  To set the weights of different experimental data.
-* **LossConf.Type**\
-  To choose the form of loss function.
-* **LossConf.Design**\
-  To adapt the loss function, like log(Loss), so as to improve its performance in parameter searching.
-### Save Settings ###
-* **Setting.PLOTFLAG**\
-  To decide whether plotting result in each iteration.
-* **Setting.SAVEFLAG**\
-  To decide whether save thermal results of each iteration calculated by many-body solver.
-* **Setting.SAVENAME**\
-  To set the name of folder saving many-body simulation results in **Tmp**, including the model informationn and their corresponding thermodynamics data.
-### Fitting Results ###
-The landscape information of Bayesian optimization will also be stored in **Tmp** after the specified number of iterations (**Para.Group_MaxEval** in **RunScript/ImportBOPara.m**) is finished. The result contains a class **BayesianOptimization** called **res** which include parameter and corresponding loss function values at each iterations. To show the landscape estimated by Bayesian optimization one can call **PlotScript/LandscapePlot.m**.
 ## Maintainer ##
 * Yuan Gao, Beihang University\
-  mail: 17231064@buaa.edu.cn
-* Bin-Bin Chen, Beihang University\
-  mail: bunbun@buaa.edu.cn
-* Wei Li, Beihang University & ITP-CAS\
-  mail: w.li@buaa.edu.cn
-## Citation
-If you use QMagen in teaching and research, please cite the following related works:
+  e-mail: yuangao@buaa.edu.cn
+
+## Acknowledgement ##
+* Wei Li, ITP-CAS
+* Sizhuo Yu, CentraleSupélec
+* Bin-Bin Chen, Beihang University
+* Qiaoyi Li, ITP-CAS
+* Dai-Wei Qu, UCAS
+
+## Reference ##
 
 ```bib
-@article{QMagen2020,
-  title={Learning the Effective Spin Hamiltonian of a Quantum Magnet},
-  author={Sizhuo Yu, Yuan Gao, Bin-Bin Chen and Wei Li},
-  journal={arXiv preprint arXiv:2011.12282},
-  year={2020}
-}
+@article{QMagen2021,
+   title = {Learning the Effective Spin {H}amiltonian of a Quantum Magnet},
+   author = {Sizhuo Yu and Yuan Gao and Bin-Bin Chen and Wei Li},
+   publisher = {Chin. Phys. Lett.},
+   year = {2021},
+   journal = {Chin. Phys. Lett.},
+   volume = {38}, 
+   number = {9},
+   eid = {097502},
+   pages = {097502},
+   url = {http://cpl.iphy.ac.cn/EN/abstract/article_115992.shtml},
+   doi = {10.1088/0256-307X/38/9/097502}
+}   
 ```
 ```bib
 @article{LTRG2011,
@@ -195,5 +134,69 @@ If you use QMagen in teaching and research, please cite the following related wo
   publisher = {American Physical Society},
   doi = {10.1103/PhysRevB.100.045110},
   url = {https://link.aps.org/doi/10.1103/PhysRevB.100.045110}
+}
+```
+```bib
+@article{tanTRG2023,
+  title = {Tangent Space Approach for Thermal Tensor Network Simulations of the 2D {H}ubbard Model},
+  author = {Li, Qiaoyi and Gao, Yuan and He, Yuan-Yao and Qi, Yang and Chen, Bin-Bin and Li, Wei},
+  journal = {Phys. Rev. Lett.},
+  volume = {130},
+  issue = {22},
+  pages = {226502},
+  numpages = {8},
+  year = {2023},
+  month = {Jun},
+  publisher = {American Physical Society},
+  doi = {10.1103/PhysRevLett.130.226502},
+  url = {https://link.aps.org/doi/10.1103/PhysRevLett.130.226502}
+}
+```
+```bib
+@article{TDVP2011,
+  title = {Time-Dependent Variational Principle for Quantum Lattices},
+  author = {Haegeman, Jutho and Cirac, J. Ignacio and Osborne, Tobias J. and Pi\ifmmode \check{z}\else \v{z}\fi{}orn, Iztok and Verschelde, Henri and Verstraete, Frank},
+  journal = {Phys. Rev. Lett.},
+  volume = {107},
+  issue = {7},
+  pages = {070601},
+  numpages = {5},
+  year = {2011},
+  month = {Aug},
+  publisher = {American Physical Society},
+  doi = {10.1103/PhysRevLett.107.070601},
+  url = {https://link.aps.org/doi/10.1103/PhysRevLett.107.070601}
+}
+```
+```bib
+@article{TDVP2016,
+  title = {Unifying Time Evolution and Optimization with Matrix Product States},
+  author = {Haegeman, Jutho and Lubich, Christian and Oseledets, Ivan and Vandereycken, Bart and Verstraete, Frank},
+  journal = {Phys. Rev. B},
+  volume = {94},
+  issue = {16},
+  pages = {165116},
+  numpages = {10},
+  year = {2016},
+  month = {Oct},
+  publisher = {American Physical Society},
+  doi = {10.1103/PhysRevB.94.165116},
+  url = {https://link.aps.org/doi/10.1103/PhysRevB.94.165116}
+}
+```
+```bib
+@article{DMRG1992,
+  title = {Density matrix formulation for quantum renormalization groups},
+  author = {White, Steven R.},
+  journal = {Phys. Rev. Lett.},
+  volume = {69},
+  issue = {19},
+  pages = {2863--2866},
+  numpages = {0},
+  year = {1992},
+  month = {Nov},
+  publisher = {American Physical Society},
+  doi = {10.1103/PhysRevLett.69.2863},
+  url = {https://link.aps.org/doi/10.1103/PhysRevLett.69.2863}
 }
 ```

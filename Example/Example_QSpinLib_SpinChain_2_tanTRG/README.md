@@ -13,6 +13,10 @@ To save time, you can directly run **Benchmark.m**.
 $H=\sum_{i=1}^{L-1} J_{xy} (S_i^x S_{i+1}^x + S_i^y S_{i+1}^y) + J_z S_i^z S_{i+1}^z - \sum_{i=1}^L (h_x S_i^x + h_y S_i^y + h_z S_i^z)$
 
 ## Algorithm ##
+We start from the density matrix at high temperature $\rho(\tau_0) = e^{-\tau_0 H}$ with $T=1/\tau_0$ and $\tau_0 << 1$.
+To construct the matrix product operator (MPO) of $\rho(\tau_0)$, we use the series-expansion thermal tensor network (SETTN) algorithm following as \
+$\rho(\tau_0) = \sum_{n=0}^{n_{\rm max} - 1} \frac{(-\tau_0)^n}{n!}H^n$.\
+With this initinal state, we carry out imaginary-time evolution by using the time-dependent varitional principle to obtain the MPO of $\rho(\beta/2)$.
 
 ## Results ##
 * Inverse temperature $\beta \equiv \frac{1}{T}$ ```Rslt.beta```
@@ -26,6 +30,11 @@ $H=\sum_{i=1}^{L-1} J_{xy} (S_i^x S_{i+1}^x + S_i^y S_{i+1}^y) + J_z S_i^z S_{i+
 
 ### RunQSpinLib_tanTRG.m ###
 **Note: We have omitted the parameters that were mentioned earlier.**
+* Add additional information to the filenames of the saved results. (Optional)
+```matlab
+% Para.saveInfo
+```
+
 * Set the many-body solver as tanTRG and start calculation.
 ```matlab
 Para.ThDQ = 'Cm';
@@ -79,7 +88,7 @@ For this case, we perform 2-site tanTRG all the time. If set ```Para.Full2 = fla
 Para.MCrit = 200;
 ```
 
-* Set the parameter of SETTN
+* Set the parameter of SETTN with the max expansion 4.
 ```matlab
 Para.Ver = 'Memory';
 % max iterations of MPO varitional product
@@ -90,7 +99,5 @@ Para.VariSum_step_max = 10000;
 Para.SETTN_init_step_max = 4;
 ```
 
-
-
-
-
+### GettanTRGCorr.m ###
+Calculate the corretion function with the MPO. (Optional)

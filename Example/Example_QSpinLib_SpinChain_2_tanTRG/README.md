@@ -1,5 +1,6 @@
 # QSpinLib Example\: Spin Chain tanTRG
 We offer here an example of tangent space tensor renormalization group (tanTRG). \
+**Note: Please read the article "Li, et al. Phys. Rev. Lett. 130, 226502" before run the script.**\
 Please run **RunQSpinLib_tanTRG.m** to start. \
 We have already provided the result in
 ```matlab
@@ -10,6 +11,8 @@ To save time, you can directly run **Benchmark.m**.
 
 ## Hamiltonian ##
 $H=\sum_{i=1}^{L-1} J_{xy} (S_i^x S_{i+1}^x + S_i^y S_{i+1}^y) + J_z S_i^z S_{i+1}^z - \sum_{i=1}^L (h_x S_i^x + h_y S_i^y + h_z S_i^z)$
+
+## Algorithm ##
 
 ## Results ##
 * Inverse temperature $\beta \equiv \frac{1}{T}$ ```Rslt.beta```
@@ -55,3 +58,39 @@ We provide a method for arbitrarily designing the step size as
 ```
 Thus the temperature will double increase to **B**, and then linearly increase to **beta1** with step **4*step1**, 
 and then linearly increase to **beta2** with step **4*step2** and so on.
+
+**Note: The step size should not be too large.**
+
+* Set the tolerance of singular value decomposition.
+```matlab
+Para.TSRGStol = 1e-12;
+```
+The theoretical numerical accuracy (i.e. the numerical accuracy with infinite bond dimension) of the program will be at the same order of magnitude as this parameter.
+
+* Set the time evolution mode of tanTRG
+```matlab
+Para.Full2 = true;
+Para.beta_switch = 2; 
+```
+For this case, we perform 2-site tanTRG all the time. If set ```Para.Full2 = flase;```, the progrem will perform 2-site tanTRG before ```Para.beta_switch``` and the perform 1-site tanTRG.
+
+* Set the bond dimesnion of MPO.
+```matlab
+Para.MCrit = 200;
+```
+
+* Set the parameter of SETTN
+```matlab
+Para.Ver = 'Memory';
+% max iterations of MPO varitional product
+Para.VariProd_step_max = 10000;
+% max iterations of MPO varitional sum
+Para.VariSum_step_max = 10000;
+% max expensian order of SETTN
+Para.SETTN_init_step_max = 4;
+```
+
+
+
+
+

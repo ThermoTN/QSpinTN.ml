@@ -17,3 +17,10 @@ For beginners, please read in the following order.
 
 ## Examples of 1D spin chain with Dzyaloshinskii-Moriya Interaction (optional) ##
 * Example_QSpinLib_DMChain_1
+
+
+## Maintainer ##
+Yuan Gao, BUAA \
+e-mail: yuangao@buaa.edu.cn
+
+Please feel free to contract me if you have any comment/question on these examples.

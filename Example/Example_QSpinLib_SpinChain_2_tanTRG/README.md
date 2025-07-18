@@ -27,9 +27,9 @@ With this initinal state, we carry out imaginary-time evolution by using the tim
 * Entanglement entropy of MPO ```Rslt.EE```
   
 ## Script and parameter settings ##
+**Note: We have omitted the parameters that were mentioned earlier.**
 
 ### RunQSpinLib_tanTRG.m ###
-**Note: We have omitted the parameters that were mentioned earlier.**
 * Add additional information to the filenames of the saved results. (Optional)
 ```matlab
 % Para.saveInfo

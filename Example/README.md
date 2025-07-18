@@ -11,9 +11,9 @@ For beginners, please read in the following order.
 * Example_QSpinLib_SpinChain_5_XTRG (optional)
 * Example_QSpinLib_SpinChain_6_iLTRG (optional)
 
-## Examples of triangular lattice spin model##
+## Examples of triangular lattice spin model ##
 * Example_QSpinLib_TriARX_1_tanTRG
 * Example_QSpinLib_TriARX_2_tdvp
 
-## Examples of 1D spin chain with Dzyaloshinskii-Moriya Interaction (optional)##
+## Examples of 1D spin chain with Dzyaloshinskii-Moriya Interaction (optional) ##
 * Example_QSpinLib_DMChain_1

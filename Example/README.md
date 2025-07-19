@@ -1,9 +1,10 @@
 # Examples #
 Here we provide some examples to demonstrate **QSpinTN.ml**.
 
-For beginners, please read in the following order.
+For beginners, please study the examples in the following order.
 
 ## Examples of 1D spin chain ##
+**Basic function of QSpinLib**
 * Example_QSpinLib_SpinChain_1_ED
 * Example_QSpinLib_SpinChain_2_tanTRG
 * Example_QSpinLib_SpinChain_3_DMRG
@@ -15,9 +16,9 @@ For beginners, please read in the following order.
 * Example_QSpinLib_TriARX_1_tanTRG
 * Example_QSpinLib_TriARX_2_tdvp
 
-## Examples of 1D spin chain with Dzyaloshinskii-Moriya Interaction (optional) ##
+## Example of 1D spin chain with Dzyaloshinskii-Moriya Interaction (optional) ##
+**Learning how to construch the Hamiltonian**
 * Example_QSpinLib_DMChain_1
-
 
 ## Maintainer ##
 Yuan Gao, BUAA \

@@ -37,7 +37,8 @@ Here we provide some examples in **Example/Example_QMagen_**\*.
 * Bin-Bin Chen, Beihang University
 * Qiaoyi Li, ITP-CAS
 * Dai-Wei Qu, UCAS
-
+* Han Li, Beijing Jiaotong University
+* Enze Lv, ITP-CAS
 ## Reference ##
 
 ```bib

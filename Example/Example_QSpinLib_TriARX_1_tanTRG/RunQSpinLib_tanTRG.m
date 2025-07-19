@@ -5,7 +5,7 @@ addpath(genpath('../../SpinModel/'));
 addpath(genpath('../../svd_lapack_interface/'));
 % set model
 Para.IntrcMap_Name = 'IntrcMap_TLARX';
-Para.saveInfo = ['debug'];
+% Para.saveInfo = ['debug'];
 % set coupling strength
 Para.Model.J1xy = 1;
 Para.Model.J1z = 1;

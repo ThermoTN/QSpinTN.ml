@@ -4,12 +4,11 @@ Run **RunQSpinLib_DMRG.m** firstly to obtain the groud-state MPS. \
 Run **RunQSpinLib_tdvp.m** secondly to calculate the ground-state spin dynamics.
 
 ## Hamiltonian ##
-$H=\sum_{i=1}^{L-1} J_{xy} (S_i^x S_{i+1}^x + S_i^y S_{i+1}^y) + J_z S_i^z S_{i+1}^z - \sum_{i=1}^L (h_x S_i^x + h_y S_i^y + h_z S_i^z)$
+$$H=\sum_{i=1}^{L-1} J_{xy} (S_i^x S_{i+1}^x + S_i^y S_{i+1}^y) + J_z S_i^z S_{i+1}^z - \sum_{i=1}^L (h_x S_i^x + h_y S_i^y + h_z S_i^z)$$
 
 ### Algorithm ###
-We firstly obtain the matrix product state (MPS) of the ground state. And then consider the real-time correlation function \
-$\langle e^{iHt}A^\dagger e^{-iHt} A \rangle$, \
-where $ e^{-iHt} A|\psi \rangle$ is obtained by using the time-dependent varitional principle (tdvp).
+We firstly obtain the matrix product state (MPS) of the ground state. And then consider the real-time correlation function 
+$\langle e^{iHt}A^\dagger e^{-iHt} A \rangle$, where $e^{-iHt} A|\psi \rangle$ is obtained by using the time-dependent varitional principle (tdvp).
 
 ## Results ##
 ### Results for ground state ###

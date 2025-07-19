@@ -3,7 +3,7 @@ We offer here an example of density matrix renormalization group (DMRG). \
 Please run **RunQSpinLib_DMRG.m** to start. 
 
 ## Hamiltonian ##
-$H=\sum_{i=1}^{L-1} J_{xy} (S_i^x S_{i+1}^x + S_i^y S_{i+1}^y) + J_z S_i^z S_{i+1}^z - \sum_{i=1}^L (h_x S_i^x + h_y S_i^y + h_z S_i^z)$
+$$H=\sum_{i=1}^{L-1} J_{xy} (S_i^x S_{i+1}^x + S_i^y S_{i+1}^y) + J_z S_i^z S_{i+1}^z - \sum_{i=1}^L (h_x S_i^x + h_y S_i^y + h_z S_i^z)$$
 
 ## Results ##
 * Ground-state energy $E_0$ ```Rslt.E0```

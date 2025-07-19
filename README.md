@@ -29,9 +29,10 @@ Here we provide some examples in **Example/Example_QMagen_**\*.
 ## Maintainer ##
 * Yuan Gao, Beihang University\
   e-mail: yuangao@buaa.edu.cn
-
+* Wei Li, ITP-CAS\
+  e-mail: w.li@itp.ac.cn
+  
 ## Acknowledgement ##
-* Wei Li, ITP-CAS
 * Sizhuo Yu, CentraleSupélec
 * Bin-Bin Chen, Beihang University
 * Qiaoyi Li, ITP-CAS

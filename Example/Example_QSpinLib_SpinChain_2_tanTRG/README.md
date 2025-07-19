@@ -10,7 +10,7 @@ To save time, you can directly run **Benchmark.m**.
 
 
 ## Hamiltonian ##
-$H=\sum_{i=1}^{L-1} J_{xy} (S_i^x S_{i+1}^x + S_i^y S_{i+1}^y) + J_z S_i^z S_{i+1}^z - \sum_{i=1}^L (h_x S_i^x + h_y S_i^y + h_z S_i^z)$
+$$H=\sum_{i=1}^{L-1} J_{xy} (S_i^x S_{i+1}^x + S_i^y S_{i+1}^y) + J_z S_i^z S_{i+1}^z - \sum_{i=1}^L (h_x S_i^x + h_y S_i^y + h_z S_i^z)$$
 
 ## Algorithm ##
 We start from the density matrix at high temperature $\rho(\tau_0) = e^{-\tau_0 H}$ with $T=1/\tau_0$ and $\tau_0 << 1$.

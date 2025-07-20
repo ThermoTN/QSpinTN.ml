@@ -11,6 +11,7 @@ For beginners, please study the examples in the following order.
 * Example_QSpinLib_SpinChain_4_tdvp
 * Example_QSpinLib_SpinChain_5_XTRG (optional)
 * Example_QSpinLib_SpinChain_6_iLTRG (optional)
+* Example_QSpinLib_XYModel_1_tanTRG (Application on 1D XY model with $L=50$) 
 
 ## Examples of triangular lattice spin model ##
 * Example_QSpinLib_TriARX_1_tanTRG

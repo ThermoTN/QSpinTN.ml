@@ -8,7 +8,11 @@ function [ C, Ns2, TE, EE ] = VariSumMPOMem( Para, MPOA, MPOB, varargin )
 
 %============Parameter settings==============
 max_step = Para.VariSum_step_max;
-ep = 1e-12;
+if isfield(Para, 'VariSumTol')
+    ep = Para.VariSumTol;
+else
+    ep = 1e-12;
+end
 %============================================
 if ~isempty(varargin)
     MPOA{1} = MPOA{1} * varargin{1}(1);
@@ -42,9 +46,9 @@ for i = 1:1:max_step
         T = Ta + Tb;
         [C{j}, C{j+1}, Ns1, TE(j), EE(j)] = two_site_update_VariSumMPO(T, len, j, '->-', D_max);
         [ EnVA{j+1}, Ta ] = Update_VariSum_EnV(EnVA(j:1:(j+2)), MPOA(j:1:(j+2)), ...
-                                          C{j}, len, j, '->-');
+            C{j}, len, j, '->-');
         [ EnVB{j+1}, Tb ] = Update_VariSum_EnV(EnVB(j:1:(j+2)), MPOB(j:1:(j+2)), ...
-                                          C{j}, len, j, '->-');
+            C{j}, len, j, '->-');
     end
     
     for j = len:-1:2
@@ -52,9 +56,9 @@ for i = 1:1:max_step
         [C{j-1}, C{j}, Ns2, TE(j-1), EE(j-1)] = two_site_update_VariSumMPO(T, len, j, '-<-', D_max);
         if j ~= 2
             [ EnVA{j-1}, Ta ] = Update_VariSum_EnV(EnVA((j-2):1:j), MPOA((j-2):1:j), ...
-                                              C{j}, len, j, '-<-');
+                C{j}, len, j, '-<-');
             [ EnVB{j-1}, Tb ] = Update_VariSum_EnV(EnVB((j-2):1:j), MPOB((j-2):1:j), ...
-                                              C{j}, len, j, '-<-');
+                C{j}, len, j, '-<-');
         end
     end
     

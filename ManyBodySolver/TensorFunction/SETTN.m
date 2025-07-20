@@ -16,7 +16,7 @@ step_max = Para.SETTN_init_step_max;
 
 rho = Id;
 Hn = H;
-Para.MCrit = Para.MCrit/4;
+Para.MCrit = floor(Para.MCrit/4);
 for i = 1:1:step_max
     % //rho = rho + (-tau)^i/i! H^i
     sig = sign((-1)^i);

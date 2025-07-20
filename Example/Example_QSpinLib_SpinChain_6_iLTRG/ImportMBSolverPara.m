@@ -1,7 +1,7 @@
 function [ Para ] = ImportMBSolverPara( Para )
 
 % // Trotter step
-Para.tau = 0.01;
+Para.tau = 0.025;
 Para.beta_max = 30;
 % Percentage change of field when calculate susceptibility
 % Recommended value
@@ -15,7 +15,7 @@ Para.N_max = floor(Para.beta_max / 2 / Para.tau) + 3;
 % // Trotter order
 Para.TroOrd = '1';      % '1' only
 % // D_max: bond dimension of rho(beta/2)
-Para.D_max = 80;
+Para.D_max = 100;
 
 % // Number of interp
 Para.InterNum = 80;

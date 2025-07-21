@@ -12,7 +12,7 @@ Rslt/Model=XXZtest-Jxy=1-Jz=0-h=[0 0 0]-L=50-BC=OBC-D=200.mat
 Rslt/Model=XXZtest-Jxy=1-Jz=0-h=[0 0 0]-L=50-BC=OBC-D=50-XTRG.mat
 Rslt/Model=XXZtest-Jxy=1-Jz=0-h=[0 0 0]-L=50-BC=OBC-D=100-XTRG.mat
 ```
-To save time, you can directly run **Check_energy.m** and **Check_free_energy**.
+To save time, you can directly run **Benchmark_energy.m** and **Benchmark_free_energy**.
 
 
 ## Hamiltonian ##

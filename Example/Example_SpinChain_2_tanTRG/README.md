@@ -20,8 +20,8 @@ With this initinal state, we carry out imaginary-time evolution by using the tim
 
 ## Results ##
 * Inverse temperature $\beta \equiv \frac{1}{T}$ ```Rslt.beta```
-* Per-site $log(\mathcal{Z})$ with $\mathcal{Z} \equiv {\rm Tr}[e^{-\beta H}]$ ```Rslt.LnZ```
-* Per-site energy $E = \frac{1}{L \mathcal{Z}} {\rm Tr}[e^{-\beta H} H]$ ```Rslt.En```
+* Per-site $\frac{1}{L}log(\mathcal{Z})$ with $\mathcal{Z} \equiv {\rm Tr}[e^{-\beta H}]$ ```Rslt.LnZ```
+* Per-site energy $e = \frac{1}{L \mathcal{Z}} {\rm Tr}[e^{-\beta H} H]$ ```Rslt.En```
 * Magnetization $M = -\frac{\partial f}{\partial h}$ with $h = \sqrt{h_x^2 + h_y^2 + h_z^2}$ ```Rslt.M```
 * Truncation error of tanTRG ```Rslt.TrunErr```
 * Entanglement entropy of MPO ```Rslt.EE```

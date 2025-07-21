@@ -10,7 +10,7 @@ $$H=\sum_{i=1}^{L-1} J_{xy} (S_i^x S_{i+1}^x + S_i^y S_{i+1}^y) + J_z S_i^z S_{i
 * Temperature $T$ ```Rslt.T```
 * Inverse temperature $\beta \equiv \frac{1}{T}$ ```Rslt.beta```
 * Per-site free energy $f = -\frac{1}{L \beta} log(\mathcal{Z})$ with $\mathcal{Z} \equiv {\rm Tr}[e^{-\beta H}]$ ```Rslt.F```
-* Per-site energy $E = \frac{1}{L \mathcal{Z}} {\rm Tr}[e^{-\beta H} H]$ ```Rslt.En```
+* Per-site energy $e = \frac{1}{L \mathcal{Z}} {\rm Tr}[e^{-\beta H} H]$ ```Rslt.En```
 * Specific heat $C_{\rm m} = \frac{\partial E}{\partial T}$ ```Rslt.Cm```
 * Magnetization $M = -\frac{\partial f}{\partial h}$ with $h = \sqrt{h_x^2 + h_y^2 + h_z^2}$ ```Rslt.M```
   

@@ -5,7 +5,7 @@ QSpinTN.ml is a package for the many-body simulations of the spin system (both g
 ## Quantum Many-Body Sovlers ##
 * Exact diagonalization (ED, as a high-*T* solver);
 * Density matrix renormalization group (DMRG, as a ground state solver for quasi-1D and 2D magnets);
-* Linearized tensor renormalization group (LTRG, as a low-*T* solver for 1D spin chain materials, etc);
+* Linearized tensor renormalization group (iLTRG, as a low-*T* solver for 1D spin chain materials, etc);
 * Exponential tensor renormalization group (XTRG, as a low-*T* solver for quasi-1D and 2D magnets, etc).
 * Tangent space tensor renormalization group (tanTRG, as a low-*T* solver for quasi-1D and 2D magnets, etc).
 
@@ -17,7 +17,10 @@ Here we provide some examples in **Example/**. Feel free to give it a try!
   e-mail: yuangao@buaa.edu.cn
 * Wei Li, ITP-CAS\
   e-mail: w.li@itp.ac.cn
-  
+
+## Join us ##
+Please [join our Slack community](https://join.slack.com/t/qspintnml/shared_invite/zt-39u4w04ip-nJ5uzRFE5LxgqY9RIsgSOw) and say hello. 
+
 ## Acknowledgement ##
 * Sizhuo Yu, CentraleSupélec
 * Bin-Bin Chen, Beihang University

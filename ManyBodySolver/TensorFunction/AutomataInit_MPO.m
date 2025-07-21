@@ -1,5 +1,5 @@
 function [ H ] = AutomataInit_MPO( IntrMap, Para, L )
-% function [ IntrMap ] = AutoMataInit( Para )
+% function [ IntrMap ] = AutoMataInit_MPO( IntrMap, Para, L )
 % Initialize the Hamiltonian by Automata picture.
 % Yuan Gao@buaa 2021.04.06 modified 2025.07.09
 % mail: yuangao@buaa.edu.cn

@@ -1,30 +1,16 @@
 # QSpinTN.ml (v0.0)
 ## Introduction ##
 QSpinTN.ml is a package for the many-body simulations of the spin system (both ground state and finite-temperature) and an advanced tool for thermal data analysis of magnetic quantum materials.
-The package consists of two main parts, i.e. QSpinLib and QMagen.
 
-## QSpinLib part ##
-Quantum spin library (QSpinLib) is a code library for both gound state and finite-temperature many-body calculation. 
-For some simple problems, we also provide the exact diagonalization method, and Hamiltonian matrix.
-
-### Quantum Many-Body Sovlers ###
+## Quantum Many-Body Sovlers ##
 * Exact diagonalization (ED, as a high-*T* solver);
 * Density matrix renormalization group (DMRG, as a ground state solver for quasi-1D and 2D magnets);
 * Linearized tensor renormalization group (LTRG, as a low-*T* solver for 1D spin chain materials, etc);
 * Exponential tensor renormalization group (XTRG, as a low-*T* solver for quasi-1D and 2D magnets, etc).
 * Tangent space tensor renormalization group (tanTRG, as a low-*T* solver for quasi-1D and 2D magnets, etc).
 
-### Try Your First QSpinLib Program ###
-Here we provide some examples in **Example/Example_QSpinlib_**\*.
-
-## QMagen part ##
-QMagen is a code library for learning the effective Hamiltonians of quantum materials from thermal data.
-
-### Efficient Optimizers ###
-* Bayesian optimization.
-
-### Try Your First QMagen Program ###
-Here we provide some examples in **Example/Example_QMagen_**\*.
+## Try Your First QSpinTN.ml Program ##
+Here we provide some examples in **Example/**. Feel free to give it a try!
 
 ## Maintainer ##
 * Yuan Gao, Beihang University\

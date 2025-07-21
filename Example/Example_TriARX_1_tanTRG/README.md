@@ -1,4 +1,4 @@
-# QSpinLib Example\: Triangular lattice tanTRG
+# Example\: Triangular lattice tanTRG
 We offer here an example of tangent space tensor renormalization group (tanTRG). 
 
 ## Hamiltonian ##

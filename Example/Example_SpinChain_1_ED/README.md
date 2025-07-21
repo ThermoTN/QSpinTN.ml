@@ -1,4 +1,4 @@
-# QSpinLib Example\: Spin Chain ED
+# Example\: Spin Chain ED
 We offer here an example of exact diagonalization (ED). \
 Please run **RunQSpinLib_ED.m** to start.
 

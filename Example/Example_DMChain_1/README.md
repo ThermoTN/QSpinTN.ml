@@ -1,4 +1,4 @@
-# QSpinLib Example\: Spin Chain tanTRG with DM interaction
+# Example\: Spin Chain tanTRG with DM interaction
 We offer here an example of tangent space tensor renormalization group (tanTRG) for 1D spin chain with DM interactions.
 The main purpose of this example is to demonstrate how to construct the Hamiltonian.
 

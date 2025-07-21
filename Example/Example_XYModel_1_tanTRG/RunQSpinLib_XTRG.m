@@ -20,12 +20,12 @@ Para.L = Para.Geo.L;
 % set magnetic field
 Para.Field.h = [0,0,0];
 
-Para.saveInfo = [];
+Para.saveInfo = ['XTRG'];
 %
-Para.ThDQ = 'Cm';
-Para.ManyBodySolver = 'tanTRG';
+Para.ThDQ = '';
+Para.ManyBodySolver = 'XTRG';
 Para.fileID = 1;
 Para = ImportMBSolverPara(Para);
 
-Rslt = GettanTRGRslt(Para);
-
+Rslt = GetXTRGRslt(Para);
+savetanTRGRslt(Para, Rslt)

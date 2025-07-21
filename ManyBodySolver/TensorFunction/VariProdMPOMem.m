@@ -28,12 +28,12 @@ end
 
 for i = 1:1:max_step
     
-    if i == 1
-        D_max = ceil(Para.MCrit/2);
-    else
-        D_max = Para.MCrit;
-    end
-    
+%     if i == 1
+%         D_max = ceil(Para.MCrit/2);
+%     else
+%         D_max = Para.MCrit;
+%     end
+    D_max = Para.MCrit;
     for j = 1:1:(len-2)
         [C{j}, C{j+1}, Ns1, TE(j), EE(j)] = two_site_update_VariProdMPO(T, len, j, '->-', D_max);
         [ EnV{j+1}, T ] = Update_VairProd_EnV(EnV(j:1:(j+2)), MPOA(j:1:(j+2)), ...

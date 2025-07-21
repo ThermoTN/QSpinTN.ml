@@ -16,7 +16,10 @@ step_max = Para.SETTN_init_step_max;
 
 rho = Id;
 Hn = H;
-Para.MCrit = floor(Para.MCrit/4);
+switch Para.ManyBodySolver
+    case 'tanTRG'
+        Para.MCrit = floor(Para.MCrit/4);
+end
 for i = 1:1:step_max
     % //rho = rho + (-tau)^i/i! H^i
     sig = sign((-1)^i);
@@ -32,14 +35,14 @@ for i = 1:1:step_max
     end
     
     fprintf(fileID, '    %d:        Truncation err of VarSum: %g\n', i, max(TE));
-    % fprintf('%d, %.5f, %.5f\n', i, fec1/log(10), fec2/log(10));
+%     fprintf('%d, %.5f, %.5f\n', i, fec1/log(10), fec2/log(10));
     if isfield(Para, 'TSRGStol')
         tol = log(Para.TSRGStol)/log(10);
     else
-        tol = -16;
+        tol = -14;
     end
     
-    if (fec2-fec1)/log(10) < tol
+    if abs(rho.lgnorm-fec1) < 10^(tol)
         break;
     end
     % //Hn = H * Hn (H^(i+1))

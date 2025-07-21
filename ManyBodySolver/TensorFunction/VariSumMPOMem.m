@@ -11,7 +11,7 @@ max_step = Para.VariSum_step_max;
 if isfield(Para, 'VariSumTol')
     ep = Para.VariSumTol;
 else
-    ep = 1e-12;
+    ep = 1e-14;
 end
 %============================================
 if ~isempty(varargin)

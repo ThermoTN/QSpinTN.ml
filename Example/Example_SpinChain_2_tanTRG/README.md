@@ -1,4 +1,4 @@
-# QSpinLib Example\: Spin Chain tanTRG
+# Example\: Spin Chain tanTRG
 We offer here an example of tangent space tensor renormalization group (tanTRG). \
 **Note: Please read the article "Li, et al. Phys. Rev. Lett. 130, 226502" before run the script.**\
 Please run **RunQSpinLib_tanTRG.m** to start. \

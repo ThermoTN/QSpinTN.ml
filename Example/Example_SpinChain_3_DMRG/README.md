@@ -1,4 +1,4 @@
-# QSpinLib Example\: Spin Chain DMRG
+# Example\: Spin Chain DMRG
 We offer here an example of density matrix renormalization group (DMRG). \
 Please run **RunQSpinLib_DMRG.m** to start. 
 

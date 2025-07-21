@@ -14,7 +14,7 @@ switch Para.ThDQ
     case 'Chi'
         ST_l = [0,2];
     otherwise
-        ST_l = [0,2];
+        ST_l = [0];
 end
 
 

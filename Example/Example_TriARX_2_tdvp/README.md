@@ -1,4 +1,4 @@
-# QSpinLib Example\: Triangular lattice ground-state dynamics
+# Example\: Triangular lattice ground-state dynamics
 We offer here an example of ground-state spin dynamcis of triangular lattice quantum magnet.
 
 ## Hamiltonian ##

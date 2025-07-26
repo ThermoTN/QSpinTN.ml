@@ -44,16 +44,15 @@ for i = 1:1:Para.DMRGStepMax
     fprintf('%d, En: %.16f, DeltaS: %g\n     Trunc. Er.: %g\n     EE: %.16f\n', i, Rslt.En(i + 2), ...
 	    DeltaS, max(TE), EE);
     if abs(Rslt.En(i + 2) - Rslt.En(i + 1))/abs(Rslt.En(i+1)) < 1e-8 && i >= 2 && DeltaS < 1e-8
-        En = Rslt.En(i + 2);
         break;
     end
     
     if Rslt.En(i + 2) - Rslt.En(i + 1) > 0 && i >= 4
-        En = Rslt.En(i + 2);
         break;
     end
     toc;
 end
+En = Rslt.En(i + 2);
 end
 
 % ======================================== %

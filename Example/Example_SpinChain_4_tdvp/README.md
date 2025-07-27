@@ -1,5 +1,5 @@
 # Example\: Spin Chain ground state dynamics
-We offer here an example of density matrix renormalization group (DMRG). \
+We offer here an example of ground-state spin dynamics. \
 Run **RunQSpinLib_DMRG.m** firstly to obtain the groud-state MPS. \
 Run **RunQSpinLib_tdvp.m** secondly to calculate the ground-state spin dynamics.
 

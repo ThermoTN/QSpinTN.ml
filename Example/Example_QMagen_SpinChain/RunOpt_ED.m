@@ -10,19 +10,18 @@
 
 clear all
 maxNumCompThreads(8)
-addpath('../Class')
-addpath('../ExpData')
-addpath('../LossFunc')
-addpath('../ManyBodySolver')
-addpath('../svd_lapack_interface')
-addpath('../Tmp')
-addpath('../UtilityFunc')
+addpath('../../Class')
+addpath('../../LossFunc')
+addpath(genpath('../../ManyBodySolver'))
+addpath('../../svd_lapack_interface')
+addpath('../../Tmp')
+addpath('../../UtilityFunc')
 
-addpath(genpath('../SpinModel'))
-
+addpath(genpath('../../SpinModel'))
+warning off
 % // ==================== User Input: Parameters ==========================
 Para.ManyBodySolver = 'ED'; % 'ED', 'iLTRG', 'XTRG'
-Para.ModelName = 'TLARX';
+Para.ModelName = 'XXZtest';
 Para.Mode = 'OPT';
 
 % // import specific heat data --------------------------------------------
@@ -30,15 +29,15 @@ Para.Mode = 'OPT';
 %             Data(:,1) -> temperarture   Unit: K
 %             Data(:,2) -> specifit heat  Unit: J/(mol K)
 % CmDataFile = {'FileName1'; 'FileName2'; ...};
-CmDataFile = {'./ExpData/Cm_0T.mat'; './ExpData/Cm_0.05T.mat'; './ExpData/Cm_0.1T.mat'};
+CmDataFile = {'./ExpData/XXZChain_Jxy=1_Jz=1.5_g=2_Cm_0T.mat'};
 
 % CmDataTRange: the temperature range to be fitted (Unit: K)
 % CmDataTRange = {[T1l, T1u]; [T2l, T2u]; ...};
-CmDataTRange = {[0.02, 0.2]; [0.05, 0.3]; [0.05, 0.3]};
+CmDataTRange = {[0.7, 3]};
 
 % CmDataField: the magnetic filed of experimantal data (Unit: Tesla)
 % CmDataField = {[B1x, B1y, B1z]; [B2x, B2y, B2z]; ...};
-CmDataField = {[0,0,0]; [0,0,0.05]; [0,0,0.1]};
+CmDataField = {[0,0,0]};
 
 % CmDatagInfo: the No. of g factor used for the conversion
 % Only require when MoldeConf.gFactor_Type = 'dir';
@@ -51,15 +50,15 @@ CmDatagInfo = {};
 %             Data(:,1) -> temperarture   Unit: K
 %             Data(:,2) -> susceptibility Unit: cm^3/mol (1/4pi * emu/mol)
 % ChiDataFile = {'FileName1'; 'FileName2'; ...};
-ChiDataFile = { };
+ChiDataFile = {'./ExpData/XXZChain_Jxy=1_Jz=1.5_g=2_Chi_Bx=0.1T.mat', './ExpData/XXZChain_Jxy=1_Jz=1.5_g=2_Chi_Bz=0.1T.mat'};
 
 % ChiDataTRange: the temperature range to be fitted (Unit: K)
 % ChiDataTRange = {[T1l, T1u]; [T2l, T2u]; ...};
-ChiDataTRange = { };
+ChiDataTRange = {[0.7, 3]; [0.7, 3]};
 
 % CmDataField: the magnetic filed of experimantal data (Unit: Tesla)
 % CmDataField = {[B1x, B1y, B1z]; [B2x, B2y, B2z]; ...};
-ChiDataField = { };
+ChiDataField = {[0.1, 0, 0], [0, 0, 0.1]};
 
 % ChiDatagInfo: the No. of g factor used for the conversion
 % Only require when MoldeConf.gFactor_Type = 'dir';
@@ -94,17 +93,17 @@ LossConf.IntSet = 'Int2Exp';
 Setting.PLOTFLAG = 0; % 0 -> off, 1 -> on
 
 % save intermediate results
-Setting.SAVEFLAG = 1;   % 0 -> off, 1 -> save the best, 2 -> save all
+Setting.SAVEFLAG = 2;   % 0 -> off, 1 -> save the best, 2 -> save all
 
 % the folder name to save intermediate results.
-Setting.SAVEFILENAME = 'Ce11119_ED_0T_1T';
+Setting.SAVEFILENAME = 'XXZtest';
 
 % the file name for log.
-Setting.SAVELOGNAME = 'Ce11119_ED_0T_1T';
+Setting.SAVELOGNAME = 'XXZtest';
 %--------------------------------------------------------------------------
 
 % // restart --------------------------------------------------------------
-load IniTable.mat
+% load IniTable.mat
 Restart.XTrace = [];
 Restart.ObjTrace = [];
 Restart.Resume = [];

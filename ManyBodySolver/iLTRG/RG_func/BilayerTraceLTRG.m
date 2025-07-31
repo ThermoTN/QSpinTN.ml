@@ -5,8 +5,8 @@ T = eye(size(La));
 fmaxval = 0;
 
 for It = 1:1:1000
-    T = TransM(T, Ta, La);
-    T = TransM(T, Tb, Lb);
+    T = TransM(T, Ta, La, 'L2R');
+    T = TransM(T, Tb, Lb, 'L2R');
     
     maxval = max(max(T));
     T = T/maxval;

@@ -19,7 +19,7 @@ Para.L = Para.Geo.L;
 
 % set magnetic field
 Para.Field.h = [0,0,0];
-g
+
 % Para.saveInfo = [];
 %
 Para.ThDQ = 'Cm';

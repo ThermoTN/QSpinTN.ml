@@ -15,7 +15,7 @@ Para.N_max = floor(Para.beta_max / 2 / Para.tau) + 3;
 % // Trotter order
 Para.TroOrd = '1';      % '1' only
 % // D_max: bond dimension of rho(beta/2)
-Para.D_max = 100;
+Para.D_max = 200;
 
 % // Number of interp
 Para.InterNum = 80;

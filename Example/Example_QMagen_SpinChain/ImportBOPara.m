@@ -2,14 +2,14 @@ function [ Para ] = ImportBOPara( MBSolver )
 
 % Parallel Bayesian optimization for matlab 2018b +
 switch MBSolver
-    case {'ED', 'ED_C'}
+    case {'ED', 'ED_C', 'tanTRG'}
         % Parallel
         Para.Parallel = 'off';
         Para.MinWorkerUtilization = 9;
         Para.ParpoolNum = 9;
         Para.Parallel_maxNumCompThreads = 4;
         % number of optimized groups
-        Para.Group_Number = 10;
+        Para.Group_Number = 1;
         % is Objective Deterministic
         %        true or false
         Para.IsObjDet = true;
@@ -19,7 +19,7 @@ switch MBSolver
         Para.AcqFunc_ER = zeros(Para.Group_Number, 1);
         
         % max evaluations of corresponding group
-        Para.Group_MaxEval(:) = 200;
+        Para.Group_MaxEval(:) = 50;
         
         % acquisition function name of corresponding group
         %       'expected-improvement'

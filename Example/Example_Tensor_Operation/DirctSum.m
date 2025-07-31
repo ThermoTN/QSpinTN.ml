@@ -1,0 +1,31 @@
+addpath(genpath('../../ManyBodySolver'))
+clear all
+clc
+
+A1 = rand([10, 10, 2, 2]);
+A2 = rand([10, 10, 2, 2]);
+B1 = rand([5, 5, 2, 2]);
+B2 = rand([5, 5, 2, 2]);
+
+T1 = GetTr(A1, A2);
+T2 = GetTr(B1, B2);
+T = T1 + T2;
+
+C1 = Sum(A1, B1);
+C2 = Sum(A2, B2);
+Tc = GetTr(C1, C2);
+norm(reshape(T - Tc, [numel(T), 1]))
+
+function C = Sum(A, B)
+sizeA = size(A);
+sizeB = size(B);
+
+C = zeros([sizeA(1) + sizeB(1), sizeA(2) + sizeB(2), sizeA(3), sizeA(4)]);
+
+C(1:sizeA(1), 1:sizeA(2), :, :) = A;
+C(sizeA(1)+1:end, sizeA(2)+1:end, :, :) = B;
+end
+
+function T = GetTr(A1, A2)
+T = contract(A1, [1,2], A2, [2,1]);
+end

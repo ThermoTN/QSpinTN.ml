@@ -43,57 +43,53 @@ switch QMagenConf.Config.Mode
 end
 
 % //set up runtime parameters
-addpath('../ManyBodySolver/TensorFunction')
+% addpath('../ManyBodySolver/TensorFunction')
 switch Para.ManyBodySolver
     case {'ED'}
-        addpath(genpath('../ManyBodySolver/ED'));
+%         addpath(genpath('../ManyBodySolver/ED'));
         Rslt = GetEDRslt(Para);
         
-        rmpath(genpath('../ManyBodySolver/ED'));
+%         rmpath(genpath('../ManyBodySolver/ED'));
         
     case {'ED_SM'}
-        addpath(genpath('../ManyBodySolver/ED_SM'));
+%         addpath(genpath('../ManyBodySolver/ED_SM'));
         Rslt = GetEDSMRslt(Para);
         
-        rmpath(genpath('../ManyBodySolver/ED_SM'));
+%         rmpath(genpath('../ManyBodySolver/ED_SM'));
     case {'ED_C'}
-        addpath(genpath('../ManyBodySolver/ED_C'));
+%         addpath(genpath('../ManyBodySolver/ED_C'));
         Rslt = GetEDCRslt(Para, ThDQ);
         
-        rmpath(genpath('../ManyBodySolver/ED_C'));
+%         rmpath(genpath('../ManyBodySolver/ED_C'));
         
     case {'XTRG'}
-        addpath(genpath('../ManyBodySolver/XTRG'));
+%         addpath(genpath('../ManyBodySolver/XTRG'));
         
         Rslt = GetXTRGRslt(Para);
         
-        rmpath(genpath('../ManyBodySolver/XTRG'));
+%         rmpath(genpath('../ManyBodySolver/XTRG'));
         
     case {'iLTRG'}
-        addpath(genpath('../ManyBodySolver/iLTRG'));
+%         addpath(genpath('../ManyBodySolver/iLTRG'));
         
         Rslt = GetiLTRGRslt(Para, ThDQ);
         
-        rmpath(genpath('../ManyBodySolver/iLTRG'));
+%         rmpath(genpath('../ManyBodySolver/iLTRG'));
         
     case {'tanTRG'}
-        addpath(genpath('../ManyBodySolver/tanTRG'));
+%         addpath(genpath('../ManyBodySolver/tanTRG'));
         
         Rslt = GettanTRGRslt(Para);
         Rslt.betaOri = Rslt.beta;
-        rmpath(genpath('../ManyBodySolver/tanTRG'));
-%     case {'CBEtanTRG'}
-%         addpath(genpath('../ManyBodySolver/CBEtanTRG'));
-%         
-%         Rslt = GetCBEtanTRGRslt(Para);
-%         rmpath(genpath('../ManyBodySolver/CBEtanTRG'));
+%         rmpath(genpath('../ManyBodySolver/tanTRG'));
+        
     otherwise
         fprintf('Illegal mant-body solver! \n');
         keyboard;
 end
 
 Rslt.betaOri = Rslt.beta;
-if strcmp(ThDQ, 'Cm') && (strcmp(Para.ManyBodySolver, 'XTRG') || strcmp(Para.ManyBodySolver, 'TSRG'))
+if strcmp(ThDQ, 'Cm') && (strcmp(Para.ManyBodySolver, 'XTRG') || strcmp(Para.ManyBodySolver, 'tanTRG'))
     [Rslt.CCHA, Rslt.betaCHA] = ThDQ_func( Rslt );
     Rslt.beta = Rslt.betaCHA;
     Rslt.Cm = Rslt.CCHA;

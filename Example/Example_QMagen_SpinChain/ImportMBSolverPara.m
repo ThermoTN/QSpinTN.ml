@@ -64,7 +64,7 @@ switch Para.ManyBodySolver
         % max expensian order of SETTN
         Para.SETTN_init_step_max = 10000;
         
-    case 'TSRG'
+    case 'tanTRG'
         
         % // SETTEN initial tau
         Para.tau0 = 2^-15;
@@ -77,6 +77,7 @@ switch Para.ManyBodySolver
         % Para.max_beta = 1000;
         [Para.tau_step, Para.beta_c ] = GetStepFunc(Para.tau0, [0.5, 0.125], [Para.beta_max]);
         Para.Full2 = false;
+        Para.beta_switch = 2;
         % //D: bond dimension of rho(beta)
         % D_list = [Di for i steps, Dj for j steps, etc .]
         % Recommended value 200

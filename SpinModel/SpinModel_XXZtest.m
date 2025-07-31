@@ -54,15 +54,15 @@ ModelConf.gFactor_Vec{3} = [0,0,1];
 % LATTICE GEOMETRY SETTINGS
 % =============================================================
 % Lattice.L = Inf;
-Lattice.L = 20;
-Lattice.BC = 'OBC';
+Lattice.L = 10;
+Lattice.BC = 'PBC';
 % =============================================================
 % PARAMETERS OPTIMIZATION RANGE SETTINGS
 % =============================================================
 % J range
-ModelConf.Para_Range{1} = [0.5, 2];
+ModelConf.Para_Range{1} = [0.5, 3];
 % Delta range
-ModelConf.Para_Range{2} = [0.5, 2];
+ModelConf.Para_Range{2} = [0.5, 3];
 % gx range
 ModelConf.gFactor_Range{1} = 2;
 % gy range

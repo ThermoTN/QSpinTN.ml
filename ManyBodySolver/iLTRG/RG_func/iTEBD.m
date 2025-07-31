@@ -1,5 +1,5 @@
-function [ LnZ ] = iTEBD( Para, T )
-% function [ LnZ ] = iTEBD( Para )
+function [ LnZ, M ] = iTEBD( Para, T )
+% function [ LnZ, M ] = iTEBD( Para )
 % Projection: Project the transfer tensors onto the base tensors
 %   The base tensors are Ta Tb, with singulr values stored Lama, Lamb.
 %   Projectors are Pja, Pjb, return norm factors are the largest singular
@@ -22,6 +22,7 @@ else
 end
 
 LnZ = zeros(Para.N_max, 1);
+M = zeros(Para.N_max, 1);
 lgnorm = 0;
 
 [Ta, Tb, La, Lb] = InitId(Para);
@@ -40,6 +41,11 @@ for It = 1:1:Para.N_max
     maxeig = BilayerTraceLTRG(Ta, La, Tb, Lb);
     LnZ(It) = lgnorm + log(maxeig)/2;
     
+    if norm(Para.Field.h) ~= 0
+        M(It) = GetiLTRGM(Ta, La, Tb, Lb, Para);
+    else
+        M(It) = 0;
+    end
     fprintf(fileID, 'LnZ: %6f \n', LnZ(It));
 end
  

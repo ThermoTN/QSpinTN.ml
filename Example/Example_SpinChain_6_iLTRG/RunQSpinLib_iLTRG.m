@@ -16,7 +16,7 @@ Para.d = 2; % d = 2S + 1 with S = 1/2
 % set lattice geometry
 
 % set magnetic field
-Para.Field.h = [0,0,0];
+Para.Field.h = [0,0,0.1];
 
 %
 Para.ThDQ = 'Cm&Chi';
@@ -27,4 +27,20 @@ Para = ImportMBSolverPara(Para);
 
 Rslt = GetiLTRGRslt(Para, Para.ThDQ);
 
-save(['HeiModel_h=', mat2str(Para.Field.h), '.mat'], 'Rslt', 'Para')
+figure(1)
+plot(Rslt.T, Rslt.Cm, '-o', 'linewidth', 2);
+xlim([0, 4])
+xlabel('$T$', 'Interpreter', 'latex')
+ylabel('$C$', 'Interpreter', 'latex')
+set(gca, 'fontsize', 22, 'fontname', 'times new roman', 'linewidth', 1.5, ...
+    'XColor', 'k', 'YColor', 'k')
+
+if norm(Para.Field.h) ~= 0
+    figure(2)
+    plot(Rslt.T, Rslt.M/norm(Para.Field.h), '-o', 'linewidth', 2);
+    xlim([0, 4])
+    xlabel('$T$', 'Interpreter', 'latex')
+    ylabel('$\chi$', 'Interpreter', 'latex')
+    set(gca, 'fontsize', 22, 'fontname', 'times new roman', 'linewidth', 1.5, ...
+        'XColor', 'k', 'YColor', 'k')
+end

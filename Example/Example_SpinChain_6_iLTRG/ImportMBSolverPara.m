@@ -2,7 +2,7 @@ function [ Para ] = ImportMBSolverPara( Para )
 
 % // Trotter step
 Para.tau = 0.025;
-Para.beta_max = 30;
+Para.beta_max = 10;
 % Percentage change of field when calculate susceptibility
 % Recommended value
 %       Zero field     0.25

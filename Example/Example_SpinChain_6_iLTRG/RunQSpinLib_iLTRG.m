@@ -9,14 +9,14 @@ Para.Trotter_Name = 'Trotter_XXZtest';
 
 % set coupling strength
 Para.Model.Jxy = 1;
-Para.Model.Jz = 1;
+Para.Model.Jz = 0;
 
 Para.d = 2; % d = 2S + 1 with S = 1/2
 
 % set lattice geometry
 
 % set magnetic field
-Para.Field.h = [0,0,0.1];
+Para.Field.h = [0,0,0];
 
 %
 Para.ThDQ = 'Cm&Chi';

@@ -13,7 +13,24 @@ QSpinTN.ml is a package for the many-body simulations of the spin system (both g
 Here we provide some examples in **Example/**. Feel free to give it a try!
 
 ## Agent Method Guidance ##
-Versioned solver skills, interface limitations, and the molar thermal-unit contract are available in [skills/](skills/README.md). These documents support external agents without changing the MATLAB solver interfaces.
+
+The `dev` branch introduces [versioned method skills](skills/README.md) for external research agents and users preparing calculations. The skills document the entry points, inputs, outputs, physical assumptions, dependencies, and known limitations of the accompanying QSpinTN revision. This addition leaves the numerical solver implementations unchanged.
+
+| Guidance | Contents |
+| --- | --- |
+| [Method selection](skills/qspintn-method-selection/SKILL.md) | Choosing a many-body method and checking its applicability |
+| [ED](skills/qspintn-ed/SKILL.md) | Finite-system thermal calculations and small-system benchmarks |
+| [iLTRG](skills/qspintn-iltrg/SKILL.md) | Infinite-chain thermal calculations and current interface limitations |
+| [XTRG](skills/qspintn-xtrg/SKILL.md) / [tanTRG](skills/qspintn-tantrg/SKILL.md) | Thermal tensor-network inputs, outputs, and convergence checks |
+| [DMRG](skills/qspintn-dmrg/SKILL.md) | Ground states, observables, and MPS preparation |
+| [Dynamics](skills/qspintn-dynamics/SKILL.md) | Ground-state real-time TDVP correlations and saving hooks |
+| [Units](skills/qspintn-units/SKILL.md) | Natural versus physical units, molar normalization, and finite-field susceptibility |
+
+Start with method selection and units, then read the relevant solver skill. Agents can discover the eight skills through [skills/manifest.json](skills/manifest.json), which also identifies the [machine-readable thermal-unit contract](skills/contracts/thermal_units.json). The physical thermal susceptibility described by this contract is finite-field M/H in **cm³/mol (SI)** per mole of magnetic spins; its numerical value is divided by **4π** to obtain CGS cm³/mol. Direct natural-unit solver outputs require their own conversion.
+
+[autoQMagen](https://github.com/YuanGao-qs/autoQMagen) uses this interface to combine QSpinTN method knowledge with its own fitting and execution rules, and saves the selected skills with each research run. Publishing a skill does not itself add an executable solver adapter to a downstream agent. Consumers remain responsible for supported tools, resource limits, data handling, and numerical validation.
+
+When an algorithm interface or physical convention changes, update its skill and any affected contract in the same revision. Consumers should record the package commit and content hashes; see the [interface and maintenance guide](skills/README.md). This skill extraction and documentation were developed with GPT assistance.
 
 ## Maintainer ##
 * Yuan Gao, Beihang University\

@@ -1,0 +1,25 @@
+---
+name: qspintn-method-selection
+description: Select an appropriate QSpinTN many-body method from observable, geometry, temperature, and convergence needs.
+---
+
+# Select a many-body method
+
+All source paths in this skill collection are relative to the QSpinTN.ml repository root. Method descriptions expose package knowledge; an application must separately implement its execution adapter.
+
+| Task | Candidate | Principal check |
+| --- | --- | --- |
+| Small finite Hamiltonian, thermal curves, reference spectrum | [ED](../qspintn-ed/SKILL.md) | Full Hilbert-space memory and finite-size effects |
+| Repeated two-site chain thermal limit | [iLTRG](../qspintn-iltrg/SKILL.md) | Trotter representation, branch limitations, time-step and bond convergence |
+| Finite chain, strip, or cluster thermal MPO | [XTRG](../qspintn-xtrg/SKILL.md) | SETTN accuracy, growing bond dimension, derivative/grid coverage |
+| Thermal MPO with flexible imaginary-time schedule | [tanTRG](../qspintn-tantrg/SKILL.md) | Step schedule, bond growth, one-site transition, derivative coverage |
+| Ground state or MPS preparation | [DMRG](../qspintn-dmrg/SKILL.md) | Initializer availability, competing states, sweep/bond convergence |
+| Ground-state real-time correlations | [TDVP](../qspintn-dynamics/SKILL.md) | Matching ground state, observable/save hook, time and bond convergence |
+
+For material thermodynamics, start with high-temperature data and a tractable finite ED model to constrain energy scales and g factors, then compare larger sizes and suitable thermal tensor methods at lower temperature. Preserve the Hamiltonian, field direction, and [unit convention](../qspintn-units/SKILL.md) across stages. A good high-temperature fit alone does not uniquely determine the effective Hamiltonian.
+
+Select based on the requested observable, geometry/interaction map, local spin dimension, field and temperature coverage, numerical precision, and actual runtime resources. Increasing accuracy and increasing system size solve different problems; assess both. On overlapping accessible systems, compare methods before using larger calculations to discriminate model parameters.
+
+Do not select DMRG as a direct finite-temperature Cm solver or real-time TDVP as imaginary-time thermal evolution. Do not infer thermodynamic-limit validity solely from use of a tensor network. Current iLTRG interface restrictions and higher-spin DMRG initialization gaps are documented in their method skills.
+
+The fitting optimizer, residual weighting, data splits, workflow resumption, and agent orchestration belong to the consuming application. This collection describes numerical method applicability and interfaces, not those workflow policies.

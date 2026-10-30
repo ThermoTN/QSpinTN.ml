@@ -1,0 +1,57 @@
+{
+  "schema_version": "qspintn.skills.v1",
+  "package": "QSpinTN.ml",
+  "skills": [
+    {
+      "name": "qspintn-ed",
+      "description": "Use QSpinTN exact diagonalization for small finite spin systems, thermal benchmarks, and high-temperature model exploration.",
+      "path": "qspintn-ed/SKILL.md",
+      "method": "ED"
+    },
+    {
+      "name": "qspintn-iltrg",
+      "description": "Use QSpinTN iLTRG for repeated two-site spin-chain thermodynamics and assess Trotter, bond-dimension, and output-grid limitations.",
+      "path": "qspintn-iltrg/SKILL.md",
+      "method": "iLTRG"
+    },
+    {
+      "name": "qspintn-xtrg",
+      "description": "Use QSpinTN XTRG for finite-MPO thermodynamics, including SETTN initialization, temperature grids, and convergence checks.",
+      "path": "qspintn-xtrg/SKILL.md",
+      "method": "XTRG"
+    },
+    {
+      "name": "qspintn-tantrg",
+      "description": "Use QSpinTN tanTRG for imaginary-time thermal MPO evolution and assess step schedules, truncation, and derived heat capacity.",
+      "path": "qspintn-tantrg/SKILL.md",
+      "method": "tanTRG"
+    },
+    {
+      "name": "qspintn-dmrg",
+      "description": "Use QSpinTN DMRG for ground-state energy, magnetization, and saved MPS preparation, with current initialization and output limitations.",
+      "path": "qspintn-dmrg/SKILL.md",
+      "method": "DMRG"
+    },
+    {
+      "name": "qspintn-dynamics",
+      "description": "Use QSpinTN real-time TDVP for ground-state correlation dynamics, including MPS preparation, momentum operators, time units, and saving hooks.",
+      "path": "qspintn-dynamics/SKILL.md",
+      "method": "TDVP"
+    },
+    {
+      "name": "qspintn-method-selection",
+      "description": "Select an appropriate QSpinTN many-body method from observable, geometry, temperature, and convergence needs.",
+      "path": "qspintn-method-selection/SKILL.md",
+      "method": null
+    },
+    {
+      "name": "qspintn-units",
+      "description": "Interpret and convert QSpinTN physical thermal outputs, especially molar SI susceptibility versus CGS susceptibility.",
+      "path": "qspintn-units/SKILL.md",
+      "method": null
+    }
+  ],
+  "contracts": {
+    "thermal_units": "contracts/thermal_units.json"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "schema_version": "qspintn.units.v1",
+  "id": "qspintn_chi_si_cm3_v1",
+  "temperature_unit": "K",
+  "field_unit": "T",
+  "normalization": "per_mole_magnetic_spins",
+  "heat_capacity": {
+    "unit": "J/(mol K)"
+  },
+  "susceptibility": {
+    "internal_unit": "qspintn_native_chi",
+    "display_unit": "cm^3/mol (SI)",
+    "definition": "finite_field_M_over_H",
+    "to_si_m3_per_mol": 1e-06,
+    "to_cgs_cm3_per_mol": 0.07957747154594767
+  }
+}

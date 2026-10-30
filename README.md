@@ -12,6 +12,9 @@ QSpinTN.ml is a package for the many-body simulations of the spin system (both g
 ## Try Your First QSpinTN.ml Program ##
 Here we provide some examples in **Example/**. Feel free to give it a try!
 
+## Agent Method Guidance ##
+Versioned solver skills, interface limitations, and the molar thermal-unit contract are available in [skills/](skills/README.md). These documents support external agents without changing the MATLAB solver interfaces.
+
 ## Maintainer ##
 * Yuan Gao, Beihang University\
   e-mail: yuangao@buaa.edu.cn

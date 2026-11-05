@@ -4,6 +4,10 @@ This directory provides reusable QSpinTN method guidance, source-level interface
 
 Start with [method selection](qspintn-method-selection/SKILL.md) and [units](qspintn-units/SKILL.md), then load only the selected method skill. Source paths written in the skills are relative to the **QSpinTN.ml repository root**, not to a skill directory. Markdown links between skill documents are relative links.
 
+For new interactions or lattice definitions, read [model building](qspintn-model-building/SKILL.md). It explains the native model/map contract, constrained Hamiltonian presentation, energy scaling, finite-bond counting and validation before fitting, and distinguishes native models from a consumer's declarative adapter.
+
+The [units skill](qspintn-units/SKILL.md) covers Cm, susceptibility and M–H data: natural versus physical solver outputs, J/mJ, tesla/oersted, SI/CGS susceptibility, and μB/spin versus literal μB/mol, emu/mol and A·m²/mol. It includes conversions in both directions, molar and mass normalization, and numerical examples. The existing thermal-unit JSON contract remains unchanged; documenting magnetization conversion does not add an M–H fitting adapter. An application's default experimental normalization must be recorded separately from the package's output convention.
+
 ## Discovery contract
 
 [manifest.json](manifest.json) uses schema `qspintn.skills.v1`. Each `skills` entry supplies `name`, `description`, `path`, and `method`; paths resolve relative to this directory. `method` is the package solver identifier (`ED`, `iLTRG`, `XTRG`, `tanTRG`, `DMRG`, or `TDVP`), or null for shared guidance. `contracts.thermal_units` points to [the thermal-unit contract](contracts/thermal_units.json), also relative to this directory.

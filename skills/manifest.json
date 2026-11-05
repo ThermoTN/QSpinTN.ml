@@ -3,6 +3,12 @@
   "package": "QSpinTN.ml",
   "skills": [
     {
+      "name": "qspintn-model-building",
+      "description": "Build and validate QSpinTN spin Hamiltonians and interaction maps for chains, two-dimensional lattices or arbitrary finite graphs, including one-dimensional site ordering, parameter constraints and the distinction between magnetic fields and on-site interactions.",
+      "path": "qspintn-model-building/SKILL.md",
+      "method": null
+    },
+    {
       "name": "qspintn-ed",
       "description": "Use QSpinTN exact diagonalization for small finite spin systems, thermal benchmarks, and high-temperature model exploration.",
       "path": "qspintn-ed/SKILL.md",
@@ -46,7 +52,7 @@
     },
     {
       "name": "qspintn-units",
-      "description": "Interpret and convert QSpinTN physical thermal outputs, especially molar SI susceptibility versus CGS susceptibility.",
+      "description": "Convert QSpinTN Cm, susceptibility and M-H data between natural, SI and CGS units; identify per-spin, molar and mass normalization from solver outputs and experimental metadata.",
       "path": "qspintn-units/SKILL.md",
       "method": null
     }

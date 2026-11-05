@@ -36,9 +36,10 @@ if ~isempty(varargin)
                 epsilon = varargin{4};
         end
     end
-    if ~isempty(find(S/ns<epsilon, 1))
-        D_max = min(find(S/ns<epsilon)-1, D_max);
-        % D_max = min(find(S<epsilon)-1, D_max);
+    first_discard = find(S/ns<epsilon, 1, 'first');
+    if ~isempty(first_discard)
+        % Colon endpoints must be scalar in MATLAB R2025a and later.
+        D_max = min(first_discard-1, D_max);
     end
     Sp = S;
     Sp = Sp/norm(Sp);

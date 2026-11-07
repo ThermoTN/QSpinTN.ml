@@ -39,6 +39,7 @@ Para.DMRGStepMax = 100; % Budget per stage
 Para.DMRGSweepTol = 1e-8; % Relative E and change of maximum bond entropy
 Para.DMRGUpdateSites = "auto"; % Or 1 / 2 for a fixed mode
 Para.DMRGEnvStorage = 'memory'; % Or 'disk'
+Para.DMRGInitialMPSFile = ''; % Or the filename of a previous MPS result
 Para.DMRGEnvRoot = fullfile(tempdir, 'qspintn_dmrg');
 Para.DMRGKeepEnv = true; % false cleans this run's disk cache on exit
 Para.saveMPS = true; % Include T and H for the existing MPS save
@@ -53,3 +54,31 @@ loader; filenames do not distinguish update modes. Historical MAT files may lack
 these diagnostics. Disk environment files in `Rslt.EnvDir` are not MPS checkpoints.
 The complete interface is documented in the
 [DMRG README](../../ManyBodySolver/DMRG/README.md).
+
+
+## Start from a previous MPS file
+
+Set one parameter in `ImportMBSolverPara.m`, or set it after calling the importer:
+
+```matlab
+Para.DMRGInitialMPSFile = 'MPS/previous.mat';
+Rslt = GetDMRGRslt(Para);
+```
+
+No manual `load` or extraction of the state is needed. The file must contain
+`Rslt.T` (save the previous result with `saveMPS=true`) or a standalone `T`.
+An empty filename selects random initialization. Current model/field parameters
+are used to rebuild the Hamiltonian and environments; the old energy and sweep
+history are not reused. Match the old state's lattice size, local dimension,
+basis and site ordering. The new `MCrit` must cover every input bond. Two-site or
+auto mode can increase the ranks up to the new cap; one-site mode cannot expand
+the supplied ranks. The loader/solver checks the tensors, restores right
+canonical form and normalizes before solving.
+
+Inspect `Rslt.DMRGInfo.InitialStateUsed`, `InitialMPSFile` and `InitialEnergy` to
+confirm the source and its energy under the new Hamiltonian. A new solve still
+needs its own convergence checks.
+
+For filename warm starts, `RunQSpinLib_DMRG.m` saves the new MPS with a
+`-warmstart-<timestamp>` suffix and preserves the input file. Point the TDVP
+loader at that newly saved filename. Cold-start filenames are unchanged.

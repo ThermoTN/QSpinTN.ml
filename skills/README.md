@@ -21,5 +21,6 @@ When changing a MATLAB entry point, parameter, normalization, output grid, or kn
 The present skills document the checked-in interfaces and known restrictions; they do not certify numerical execution on every platform. Examples may require prepared inputs, MATLAB toolboxes, platform-specific binaries, or local saving hooks. Keep numerical validation evidence separate from documentation/schema validation.
 
 The [DMRG skill](qspintn-dmrg/SKILL.md) covers one-site, two-site and automatic
-mode switching, memory/disk environments, stopping diagnostics and MPS handoff.
+mode switching, memory/disk environments, filename-based MPS warm starts, stopping
+diagnostics and MPS handoff.
 Its detailed parameter/output contract is in [the DMRG README](../ManyBodySolver/DMRG/README.md).

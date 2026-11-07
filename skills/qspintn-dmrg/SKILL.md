@@ -1,6 +1,6 @@
 ---
 name: qspintn-dmrg
-description: Use QSpinTN one-site, two-site or hybrid DMRG for ground states and MPS preparation, with memory or disk environments and convergence diagnostics.
+description: Use QSpinTN one-site, two-site or hybrid DMRG for ground states, filename-based MPS warm starts, memory or disk environments and convergence diagnostics.
 ---
 
 # DMRG
@@ -15,7 +15,7 @@ parameter, stopping and storage contract.
 `DMRGMain`. Use `Example/Example_SpinChain_3_DMRG/` for the interaction map,
 geometry, local dimension, natural-unit `Field.h`, and solver inputs. Its importer
 sets `MCrit`, `DK`, `tol`, `DMRGStepMax`, `DMRGSweepTol`, `DMRGUpdateSites`,
-`DMRGEnvStorage`, `DMRGEnvRoot`, `DMRGKeepEnv`, and `saveMPS` explicitly.
+`DMRGEnvStorage`, `DMRGEnvRoot`, `DMRGKeepEnv`, `DMRGInitialMPSFile`, and `saveMPS` explicitly.
 
 - `DMRGUpdateSites="auto"` is the default: start with two-site sweeps and switch
   to one-site after a resolved energy increase between completed sweeps. Numeric
@@ -34,10 +34,23 @@ valid supplied state. One-site mode has a generic `d>=2` right-canonical
 initializer and ranks capped by `MCrit` and the Hilbert space of each cut. It
 cannot increase those ranks. The two-site layout requires `L>=3`.
 
-`DMRGMain(Para,H,initialState)` accepts a normalized, right-canonical MPS centered
-at site 1 with ranks no larger than `MCrit`. The caller guarantees these
-properties. This warm start uses full `DK` from the first sweep; random two-site
-initialization uses `DK=2` for its first sweep. It is not checkpoint resumption.
+For a previous DMRG MPS, set `Para.DMRGInitialMPSFile='MPS/previous.mat'` and
+call `GetDMRGRslt(Para)` normally. The MAT file must contain `Rslt.T` or standalone
+`T` (`Rslt.T` takes priority). Set the filename after the example importer or edit
+its default. Empty/absent selects a cold start; relative paths use the MATLAB
+working directory. Missing/incompatible input is an error, never a random fallback.
+The previous run needs `saveMPS=true` when saving `Rslt`.
+
+Current `Para` defines the new Hamiltonian, fields and numerical controls; no
+old Hamiltonian, energy, environments or sweep counters are reused. Match `L`,
+`d`, local basis and site ordering. The solver checks shapes/connectivity/finiteness
+and requires each input bond to fit `MCrit`, then restores right canonical form
+with QR and normalizes without SVD truncation. This also applies to an in-memory
+MPS passed to `DMRGMain(Para,H,initialState)`. A larger cap allows two-site/auto
+bond growth; fixed one-site sweeps cannot expand the supplied ranks. A smaller
+cap than the old bonds is rejected. Supplied states use full `DK` from the first
+sweep; cold two-site initialization uses `DK=2` initially. This is a new solve,
+not checkpoint resumption.
 
 ## Read outputs and prepare dynamics
 
@@ -48,7 +61,9 @@ second output returns `T` independently of that flag. At zero field the wrapper
 assigns `M=0`; this does not establish absence of spontaneous or local order.
 
 Inspect `DMRGInfo.Converged` and `StopReason`, both stage counts and switch/handoff
-energies. `sweep_limit` and fixed-two-site `energy_rise` are not convergence.
+energies. `InitialStateUsed` confirms whether a supplied state was used,
+`InitialMPSFile` records its resolved input filename, and `InitialEnergy` is its
+energy under the current Hamiltonian before the first sweep. `sweep_limit` and fixed-two-site `energy_rise` are not convergence.
 Per-stage `*SweepSeconds` and `*LocalIterations` include all complete sweeps but
 exclude initialization/observations/final saving. Full energy and entropy
 histories are printed in the log. `EE` uses a pre-truncation spectrum in two-site
@@ -59,8 +74,10 @@ removed. These rolling environments contain neither the MPS nor a sweep
 checkpoint and cannot alone resume a run. Memory runs omit this field.
 
 For [TDVP](../qspintn-dynamics/SKILL.md), save `Para` and `Rslt` with `saveMPS=true`
-and verify `T`, `H`, total `E0`, and diagnostics before reuse. Example MPS filenames
-do not encode update mode; choose destinations deliberately when comparing modes.
+and verify `T`, `H`, total `E0`, and diagnostics before reuse. The three DMRG-to-TDVP
+examples append `-warmstart-<timestamp>` to newly saved results when an input MPS
+file is supplied, preserving the old file. Select the new filename in the TDVP
+loader. Filenames still do not encode update mode.
 Historical MAT files may lack the new diagnostics.
 
 For local order and correlations, `DMRGObs/ObserveSpin` and `Correlate` use

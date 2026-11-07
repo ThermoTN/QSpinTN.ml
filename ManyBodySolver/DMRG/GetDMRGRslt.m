@@ -1,8 +1,15 @@
 function [Rslt, T] = GetDMRGRslt(Para)
 % The optional state output also allows measurement when saveMPS is false.
+% Set Para.DMRGInitialMPSFile to a MAT file containing a previous Rslt.T or T.
+
+initialState = []; initialFile = '';
+if isfield(Para,'DMRGInitialMPSFile')
+    [initialState,initialFile] = LoadDMRGInitialMPS(Para.DMRGInitialMPSFile);
+end
 
 [ H, ~, Ope ] = InitHam(Para);
-[T, E0, EE, envDir, info] = DMRGMain(Para, H);
+[T, E0, EE, envDir, info] = DMRGMain(Para, H, initialState);
+info.InitialMPSFile = initialFile;
 Rslt.DMRGInfo = info;
 if ~isempty(envDir), Rslt.EnvDir = envDir; end
 if norm(Para.Field.h) ~= 0

@@ -21,8 +21,11 @@ The DMRG importers also expose `DMRGUpdateSites`, `DMRGSweepTol`,
 before using the MPS. A return after `sweep_limit` or `energy_rise` does not certify
 a ground state. Existing tracked MAT files may predate these fields. Disk
 `Rslt.EnvDir` files are rolling contraction environments, not an MPS checkpoint;
-TDVP still needs the saved `Rslt.T`, `Rslt.H`, and total `Rslt.E0`. Example MPS
-filenames do not distinguish update modes.
+TDVP still needs the saved `Rslt.T`, `Rslt.H`, and total `Rslt.E0`. For a new DMRG solve starting from a saved MPS, set `Para.DMRGInitialMPSFile`
+to that filename after the importer. The new run rebuilds the Hamiltonian from
+current `Para`; inspect its new convergence diagnostics. Preparation examples
+append `-warmstart-<timestamp>` to such output files, so update the TDVP loader
+to select the new result. Example MPS filenames do not distinguish update modes.
 
 ## Observable and output contract
 

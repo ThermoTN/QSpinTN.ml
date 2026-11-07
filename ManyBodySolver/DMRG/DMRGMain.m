@@ -1,12 +1,9 @@
 function [T, En, EE, EnvDir, info] = DMRGMain(Para, H, initialState)
 % Numeric 1/2 select fixed-site algorithms. "auto" switches on an energy rise.
-% Optional initialState must be normalized and right canonical (center 1).
+% A supplied initialState is checked, normalized and made right canonical.
 if nargin<3, initialState=[]; end
 if ~isempty(initialState)
-    assert(isstruct(initialState) && numel(initialState.A)==Para.L, ...
-        'DMRG:InitialState','Initial MPS must contain Para.L tensors.');
-    assert(all(cellfun(@(a)size(a,1)<=Para.MCrit && size(a,2)<=Para.MCrit, ...
-        initialState.A(2:end-1))), 'DMRG:InitialState','Initial MPS exceeds MCrit.');
+    initialState = PrepareDMRGInitialMPS(initialState,Para);
 end
 mode = "auto";
 if isfield(Para,'DMRGUpdateSites'), mode = string(Para.DMRGUpdateSites); end
@@ -19,13 +16,15 @@ info = struct('Mode',mode,'TwoSiteSweeps',0,'OneSiteSweeps',0,'Converged',false,
     'StopReason',"sweep_limit",'SwitchSweep',[],'SwitchDeltaE',[], ...
     'SwitchEnergy',[],'OneSiteInitialEnergy',[], ...
     'TwoSiteSweepSeconds',[],'OneSiteSweepSeconds',[], ...
-    'TwoSiteLocalIterations',[],'OneSiteLocalIterations',[]);
+    'TwoSiteLocalIterations',[],'OneSiteLocalIterations',[], ...
+    'InitialStateUsed',~isempty(initialState),'InitialEnergy',[]);
 handoff = [];
 if mode~="1"
     [T,En,EE,info.TwoSiteSweeps,reason,rise,stats] = ...
         twoSiteSweeps(Para,H,env,mode=="auto",initialState);
     info.TwoSiteSweepSeconds = stats.Seconds;
     info.TwoSiteLocalIterations = stats.Iterations;
+    info.InitialEnergy = stats.InitialEnergy;
     if reason~="switch"
         info.Converged = reason=="converged";
         info.StopReason = reason;
@@ -45,6 +44,7 @@ end
 [T,En,EE,stage] = DMRGOneSite(Para,H,env,handoff);
 info.OneSiteSweeps = stage.Sweeps;
 info.OneSiteInitialEnergy = stage.InitialEnergy;
+if isempty(info.InitialEnergy), info.InitialEnergy = stage.InitialEnergy; end
 info.Converged = stage.Converged;
 info.OneSiteSweepSeconds = stage.SweepSeconds;
 info.OneSiteLocalIterations = stage.LocalIterations;
@@ -75,6 +75,7 @@ Rslt.En(1) = inf;
 
 Init_DMRG_EnV(EnV,H,T);
 Rslt.En(2) = GetEn_DMRG(EnV, T) * exp(H.lgnorm);
+stats.InitialEnergy = real(Rslt.En(2));
 % keyboard;
 EE = zeros([Para.L-1, 1]);
 TE = zeros([Para.L-1, 1]);

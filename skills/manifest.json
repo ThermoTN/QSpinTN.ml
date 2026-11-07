@@ -34,7 +34,7 @@
     },
     {
       "name": "qspintn-dmrg",
-      "description": "Use QSpinTN one-site, two-site or hybrid DMRG for ground states and MPS preparation, with memory or disk environments and convergence diagnostics.",
+      "description": "Use QSpinTN one-site, two-site or hybrid DMRG for ground states, filename-based MPS warm starts, memory or disk environments and convergence diagnostics.",
       "path": "qspintn-dmrg/SKILL.md",
       "method": "DMRG"
     },

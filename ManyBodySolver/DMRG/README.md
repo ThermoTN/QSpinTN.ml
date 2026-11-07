@@ -21,6 +21,7 @@ apply to older callers that omit the new fields.
 | `DMRGEnvStorage` | Default `'memory'`; `'disk'` writes individual rolling environment blocks. |
 | `DMRGEnvRoot` | Disk cache parent; default `fullfile(tempdir,'qspintn_dmrg')`. Ignored in memory mode. |
 | `DMRGKeepEnv` | Default `true`; `false` removes this run's disk directory on return or error. Ignored in memory mode. |
+| `DMRGInitialMPSFile` | Default `''`; MAT filename containing a previous `Rslt.T` or standalone `T` for a new run. |
 | `saveMPS` | Default absent/false; `true` includes `T` and `H` in `Rslt`. It does not itself write a result file. |
 
 ```matlab
@@ -34,6 +35,7 @@ Para.DMRGEnvStorage = 'memory'; % Set 'disk' to offload environments
 Para.DMRGEnvRoot = fullfile(tempdir, 'qspintn_dmrg');
 Para.DMRGKeepEnv = true;
 Para.saveMPS = false;
+Para.DMRGInitialMPSFile = ''; % Or 'MPS/previous.mat'
 Rslt = GetDMRGRslt(Para);
 ```
 
@@ -87,10 +89,34 @@ tensor layout requires at least three sites.
 [T,E0,EE,envDir,info] = DMRGMain(Para,H,initialState);
 ```
 
-The optional initial state must be normalized, right canonical with center at
-site 1, in the package MPS convention, and bounded by `MCrit`. The caller is
-responsible for these conditions. With this input both modes use the requested
-`DK` from the first sweep. This is a warm start, not checkpoint resumption.
+To start from an earlier DMRG result, provide its filename:
+
+```matlab
+Para.DMRGInitialMPSFile = 'MPS/previous.mat';
+Rslt = GetDMRGRslt(Para);
+```
+
+The file must contain `Rslt.T` (the usual `saveMPS=true` result) or a standalone
+variable `T`; `Rslt.T` takes priority when both exist. `''`, `""` or an absent
+field keeps random initialization. Relative filenames resolve from MATLAB's
+current directory. The input file is read only; old `Para`, `H`, energy,
+environments and sweep counters are not reused. Current `Para` defines the new
+Hamiltonian and all numerical controls, so coupling constants and field may change.
+
+The MPS must have the same `L`, `d`, local basis and site ordering as the new
+model, and every input bond must be no larger than the new `MCrit`. Tensor shapes,
+finite entries and bond connectivity are checked; basis/site semantics remain
+the caller's responsibility. Missing files, absent states and incompatible
+shapes/ranks cause errors rather than a random-start fallback. A right-to-left
+QR pass restores the center to site 1 without SVD truncation and normalizes the
+state; its previous global amplitude (`lgnorm`) is discarded. This preparation
+also applies to `DMRGMain(Para,H,initialState)` for an in-memory MPS.
+
+A larger new `MCrit` permits two-site/auto to grow the old bonds; fixed one-site
+mode stays within the supplied ranks. A smaller `MCrit` than an input bond is
+rejected rather than silently truncating it. With supplied input both modes use
+the requested `DK` from the first sweep. Sweep counters and environment stores
+start afresh: this is a warm start, not checkpoint resumption.
 
 `Rslt` contains total natural-unit energy `E0`, per-site magnetization along the
 field `M`, spin operators `Op`, final maximum bond entropy `EE`, and `DMRGInfo`.
@@ -101,6 +127,9 @@ output returns `T` regardless of `saveMPS`.
 `DMRGInfo` records `Mode`, `TwoSiteSweeps`, `OneSiteSweeps`, `Converged`,
 `StopReason` (`converged`, `sweep_limit`, or fixed-two-site `energy_rise`),
 `SwitchSweep`, `SwitchDeltaE`, `SwitchEnergy`, and `OneSiteInitialEnergy`.
+`InitialStateUsed` reports whether an MPS was supplied, `InitialEnergy` evaluates
+the prepared state with the current Hamiltonian before the first sweep, and
+`GetDMRGRslt` adds `InitialMPSFile` with the resolved filename (empty for a cold run).
 `TwoSiteSweepSeconds` / `OneSiteSweepSeconds` and the corresponding
 `*LocalIterations` arrays include every complete sweep, including final and
 switching sweeps. Timings include environment I/O, but exclude initialization,
@@ -133,7 +162,9 @@ removed. Memory mode creates no directory and omits `Rslt.EnvDir`. Retained
 environments alone cannot resume a calculation: they lack a synchronized MPS,
 sweep position and complete checkpoint. Explicitly save `Para` and `Rslt` with
 `saveMPS=true` for downstream TDVP. The three TDVP preparation examples keep their
-existing `MPS/` filenames; modes do not select separate result directories.
+existing `MPS/` filenames for cold runs. Filename warm starts append a
+`-warmstart-<timestamp>` suffix to the newly saved result. Select that new file
+explicitly in the TDVP loader. Update modes do not select separate directories.
 
 ## Validation and provenance
 

@@ -111,6 +111,7 @@ switch Para.ManyBodySolver
         Para.DMRGEnvStorage = 'memory'; % 'memory' or 'disk', for both stages
         Para.DMRGEnvRoot = fullfile(tempdir, 'qspintn_dmrg'); % Disk cache parent
         Para.DMRGKeepEnv = true; % Retain disk environments; false cleans them on return
+        Para.DMRGInitialMPSFile = ''; % Previous MAT filename (Rslt.T or T); empty starts fresh
 end
 
 end

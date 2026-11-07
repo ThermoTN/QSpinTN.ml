@@ -29,5 +29,12 @@ Para = ImportMBSolverPara(Para);
 Rslt = GetDMRGRslt(Para);
 
 FileName = GetFileName(Para);
+if Rslt.DMRGInfo.InitialStateUsed
+    % Keep the previous result when refining the same physical parameters.
+    [~,base,ext] = fileparts(FileName);
+    stamp = char(datetime('now','Format','yyyyMMdd_HHmmss_SSS'));
+    FileName = [base, '-warmstart-', stamp, ext];
+end
+if ~isfolder('MPS'), mkdir('MPS'); end
 
 save(['MPS/', FileName], 'Para', 'Rslt')

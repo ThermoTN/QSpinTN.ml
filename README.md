@@ -23,7 +23,7 @@ The `dev` branch introduces [versioned method skills](skills/README.md) for exte
 | [ED](skills/qspintn-ed/SKILL.md) | Finite-system thermal calculations and small-system benchmarks |
 | [iLTRG](skills/qspintn-iltrg/SKILL.md) | Infinite-chain thermal calculations and current interface limitations |
 | [XTRG](skills/qspintn-xtrg/SKILL.md) / [tanTRG](skills/qspintn-tantrg/SKILL.md) | Thermal tensor-network inputs, outputs, and convergence checks |
-| [DMRG](skills/qspintn-dmrg/SKILL.md) | Ground states, observables, and MPS preparation |
+| [DMRG](skills/qspintn-dmrg/SKILL.md) | One/two-site and hybrid ground states, memory/disk environments, MPS preparation |
 | [Dynamics](skills/qspintn-dynamics/SKILL.md) | Ground-state real-time TDVP correlations and saving hooks |
 | [Units](skills/qspintn-units/SKILL.md) | Cm, χ and M–H conversions; SI/CGS, μB/spin versus μB/mol, field units and molar/mass normalization |
 

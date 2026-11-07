@@ -34,7 +34,7 @@
     },
     {
       "name": "qspintn-dmrg",
-      "description": "Use QSpinTN DMRG for ground-state energy, magnetization, and saved MPS preparation, with current initialization and output limitations.",
+      "description": "Use QSpinTN one-site, two-site or hybrid DMRG for ground states and MPS preparation, with memory or disk environments and convergence diagnostics.",
       "path": "qspintn-dmrg/SKILL.md",
       "method": "DMRG"
     },

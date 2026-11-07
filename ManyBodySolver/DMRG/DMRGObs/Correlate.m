@@ -1,49 +1,39 @@
 function [CorSpin] = Correlate(Si, Sj, GS)
-% 2022/4/14 by ezlv
-% Corralate <SaSb> Sa is on i and Sb is on j
-% a, b = x, y, z
-L = length(GS);
-d = 2;
-CorSpin = zeros(L, L);
-% MPS{i} = contract i tensors of GS
-%  O---2
-%  |
-%  O---1
-
-for i = 1:L % Si
-    for j = i+1:L % Sj
-	left = cell(L-1, 1);
-        for k = 1:j
-            if i == 1 && k == 1
-		% keyboard;
-                left{k} = contract(GS{k}, 2, Si, 1);
-                left{k} = contract(left{k}, 2, conj(GS{k}), 2);
-            elseif j == L && k == L
-		% keyboard;
-                left{k} = contract(GS{k}, 1, left{k-1}, 1);
-                left{k} = contract(left{k}, 2, conj(GS{k}), 1);
-                CorSpin(i,j) = contract(left{k}, [1,2], eye(d,d), [1,2]);
-            else
-                if k == 1
-                    left{k} = contract(GS{k}, 2, conj(GS{k}), 2);
-                elseif k == i
-                    left{k} = contract(GS{k}, 1, left{k-1}, 1);
-                    left{k} = contract(left{k}, 3, conj(GS{k}), 1);
-                    left{k} = contract(left{k}, [2,4], Si, [1,2]);
-                elseif k == j
-                    % keyboard;
-                    left{k} = contract(GS{k}, 1, left{k-1}, 1);
-                    left{k} = contract(left{k}, 3, conj(GS{k}), 1);
-                    left{k} = contract(left{k}, [2,4], Sj, [1,2]);
-                    bond = length(GS{k}(1,:,1));
-                    CorSpin(i,j) = contract(left{k}, [1,2], eye(bond, bond), [1,2]);
-                else
-                    left{k} = contract(GS{k}, 1, left{k-1}, 1);
-                    left{k} = contract(left{k}, 3, conj(GS{k}), 1);
-                    left{k} = contract(left{k}, [2,4], eye(d,d), [1,2]);
-                end
-            end 
+% Upper-triangular <Si_i Sj_j>. Both operators use (bra,ket) index order.
+CorSpin = nan(length(GS), length(GS));
+nGS = GS;
+for it1 = 1:length(GS)-1
+    if it1 == 1
+        nGS{it1} = contract(nGS{it1}, 2, Si, 2);
+    else
+        nGS{it1} = contract(nGS{it1}, 3, Si, 2);
+    end
+    env = get_env(nGS, GS);
+    nGS = GS;
+    for it2 = it1+1:length(GS)
+        if it2 == length(GS)
+            loc_ten = contract(GS{it2}, 2, Sj, 2);
+            tmp = contract(env{it2-1}, 1, loc_ten, 1);
+            CorSpin(it1, it2) = contract(tmp, [1, 2], conj(GS{it2}), [1, 2]);
+        else
+            loc_ten = contract(GS{it2}, 3, Sj, 2);
+            tmp = contract(env{it2-1}, 1, loc_ten, 1);
+            tmp = contract(tmp, [1, 3], conj(GS{it2}), [1, 3]);
+            CorSpin(it1, it2) = contract(tmp, [1, 2], eye(size(tmp, 1)), [1, 2]);
         end
+
+
     end
 end
+end
+
+function env = get_env(nGS, GS)
+env = cell(1, length(GS));
+
+env{1} = contract(nGS{1}, 2, conj(GS{1}), 2);
+for it = 2:length(GS)-1
+    env{it} = contract(env{it-1}, 1, nGS{it}, 1);
+    env{it} = contract(env{it}, [1, 3], conj(GS{it}), [1, 3]);
+end
+
 end

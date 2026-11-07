@@ -1,26 +1,82 @@
 ---
 name: qspintn-dmrg
-description: Use QSpinTN DMRG for ground-state energy, magnetization, and saved MPS preparation, with current initialization and output limitations.
+description: Use QSpinTN one-site, two-site or hybrid DMRG for ground states and MPS preparation, with memory or disk environments and convergence diagnostics.
 ---
 
 # DMRG
 
-All source paths below are relative to the QSpinTN.ml repository root.
+All source paths are relative to the QSpinTN.ml repository root. Read
+[ManyBodySolver/DMRG/README.md](../../ManyBodySolver/DMRG/README.md) for the complete
+parameter, stopping and storage contract.
 
-## Entry points and inputs
+## Configure and run
 
-`ManyBodySolver/DMRG/GetDMRGRslt.m` constructs the Hamiltonian with `InitHam` and calls `ManyBodySolver/DMRG/DMRGMain.m`. Follow `Example/Example_SpinChain_3_DMRG/` for `IntrcMap_Name`, `Model`, `d`, geometry, `L`, natural-unit `Field.h`, `ManyBodySolver`, and `fileID`. The local `Example/Example_SpinChain_3_DMRG/ImportMBSolverPara.m` supplies `MCrit`, Krylov dimension `DK`, local tolerance `tol`, and `DMRGStepMax`.
+`ManyBodySolver/DMRG/GetDMRGRslt.m` builds the Hamiltonian with `InitHam` and calls
+`DMRGMain`. Use `Example/Example_SpinChain_3_DMRG/` for the interaction map,
+geometry, local dimension, natural-unit `Field.h`, and solver inputs. Its importer
+sets `MCrit`, `DK`, `tol`, `DMRGStepMax`, `DMRGSweepTol`, `DMRGUpdateSites`,
+`DMRGEnvStorage`, `DMRGEnvRoot`, `DMRGKeepEnv`, and `saveMPS` explicitly.
 
-The current `DMRGMain` initializes `d=2` through `ManyBodySolver/DMRG/Tensor_Func/InitMPS.m`, which uses random states. For `d!=2` it calls `InitMPS_d`, but that function is absent from this checkout. A higher-spin run requires a compatible initializer and validation before execution; there is no current `my_InitMPS` fallback.
+- `DMRGUpdateSites="auto"` is the default: start with two-site sweeps and switch
+  to one-site after a resolved energy increase between completed sweeps. Numeric
+  `1` / `2` select fixed modes. Auto can finish without a switch.
+- `DMRGStepMax` is a separate budget per stage. `DMRGSweepTol` defaults to `1e-8`
+  and tests relative energy change and change of maximum bond entropy. `tol`
+  governs local Lanczos Ritz-energy change/breakdown, not a residual norm.
+- `DMRGEnvStorage='memory'` is the default. `'disk'` offloads rolling environments;
+  the MPS/MPO and local workspace remain in RAM. `DMRGEnvRoot` defaults to
+  `fullfile(tempdir,'qspintn_dmrg')`. Each run creates a unique subdirectory.
+  `DMRGKeepEnv=true` retains it; `false` cleans it on exit.
 
-## Outputs and physical interpretation
+Cold two-site/auto runs initialize `d=2` with `InitMPS`. For `d>2` they still call
+the missing `InitMPS_d`; do not launch them without a compatible initializer or
+valid supplied state. One-site mode has a generic `d>=2` right-canonical
+initializer and ranks capped by `MCrit` and the Hilbert space of each cut. It
+cannot increase those ranks. The two-site layout requires `L>=3`.
 
-`GetDMRGRslt` returns `E0`, `M`, and local spin operators `Op`. Set `saveMPS=true` to also return `T` (MPS) and `H` (MPO), needed by [dynamics](../qspintn-dynamics/SKILL.md). `E0` is the total natural-unit energy, while `M` is divided by `L`. The wrapper assigns `M=0` when the applied field is zero; this does not prove absence of spontaneous or local order.
+`DMRGMain(Para,H,initialState)` accepts a normalized, right-canonical MPS centered
+at site 1 with ranks no larger than `MCrit`. The caller guarantees these
+properties. This warm start uses full `DK` from the first sweep; random two-site
+initialization uses `DK=2` for its first sweep. It is not checkpoint resumption.
 
-The present wrapper does not return `EE`, sweep history, or a convergence status. Although `DMRGMain` prints energy, entropy, and truncation information, those diagnostics must be captured or exposed separately if needed.
+## Read outputs and prepare dynamics
 
-## Convergence and limits
+`[Rslt,T]=GetDMRGRslt(Para)` returns total energy `E0`, per-site field-direction
+magnetization `M`, spin operators `Op`, maximum bond entropy `EE`, and `DMRGInfo`.
+`saveMPS=true` adds `Rslt.T` and `Rslt.H`; it does not write a file. The optional
+second output returns `T` independently of that flag. At zero field the wrapper
+assigns `M=0`; this does not establish absence of spontaneous or local order.
 
-Check ground-state energy against ED for a matching small Hamiltonian and test increasing bond dimension, Krylov dimension, and sweeps. Record the random seed and compare independently initialized states when competing solutions are plausible. The global sweep termination uses hard-coded energy/entropy thresholds and can also stop after an energy increase; `Para.tol` governs the local Krylov calculation, not all stopping conditions.
+Inspect `DMRGInfo.Converged` and `StopReason`, both stage counts and switch/handoff
+energies. `sweep_limit` and fixed-two-site `energy_rise` are not convergence.
+Per-stage `*SweepSeconds` and `*LocalIterations` include all complete sweeps but
+exclude initialization/observations/final saving. Full energy and entropy
+histories are printed in the log. `EE` uses a pre-truncation spectrum in two-site
+mode and an untruncated spectrum in one-site mode.
 
-DMRG computes a ground state, not finite-temperature Cm or susceptibility. A two-dimensional interaction map still yields a finite MPO geometry whose width and ordering affect cost and accuracy. Save `Para`, `T`, `H`, and total `E0` together if preparing a TDVP run; the field, geometry, and energy convention must match.
+Disk runs return `Rslt.EnvDir`; with `DMRGKeepEnv=false` it has already been
+removed. These rolling environments contain neither the MPS nor a sweep
+checkpoint and cannot alone resume a run. Memory runs omit this field.
+
+For [TDVP](../qspintn-dynamics/SKILL.md), save `Para` and `Rslt` with `saveMPS=true`
+and verify `T`, `H`, total `E0`, and diagnostics before reuse. Example MPS filenames
+do not encode update mode; choose destinations deliberately when comparing modes.
+Historical MAT files may lack the new diagnostics.
+
+For local order and correlations, `DMRGObs/ObserveSpin` and `Correlate` use
+`S(bra,ket)` and expect a normalized MPS right canonical at sites 2:L.
+`Correlate` only evaluates `i<j`; diagonal/lower entries are `NaN`, not measured
+zeros. The `Observe_ezLv` convenience wrapper and shared `MPS2V` helper remain
+spin-1/2-specific.
+
+## Verification and interpretation
+
+For a small tractable system, compare with independent ED and exercise both
+storage backends, mode switching, cache cleanup and MPS saving/loading. Validation
+scripts/logs for this update are local development artifacts, not distributed
+entry points. Compare each scientific model with ED when tractable, increase
+bond dimension/Krylov budget, and check independent seeds for competing states. Sweep convergence and one-site zero
+truncation error do not establish exactness. Do not extrapolate another project's
+benchmark to this checkout or a different system size. DMRG is a ground-state
+solver, not a direct finite-temperature Cm or susceptibility solver; geometry
+width, ordering and finite size still matter.

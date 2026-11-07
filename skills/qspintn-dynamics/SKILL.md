@@ -15,6 +15,15 @@ All source paths below are relative to the QSpinTN.ml repository root.
 
 Set `tau`, `tmax`, `MCrit`, `Stol`, `Full2`, `t_switch`, and a valid `fileID`. Distinguish truncation control from the internal Lanczos exponential controls. The chain example loads a specific ten-site MPS under its `MPS/` directory; that file is tracked in this checkout. Verify its saved `Para`, `T`, `H`, and `E0` before reuse. For a changed model, field, geometry, or accuracy target, prepare a matching state with `Example/Example_SpinChain_4_tdvp/RunQSpinLib_DMRG.m` and its importer, which sets `saveMPS=true`, then select the new file explicitly.
 
+The DMRG importers also expose `DMRGUpdateSites`, `DMRGSweepTol`,
+`DMRGEnvStorage`, `DMRGEnvRoot`, and `DMRGKeepEnv`. New results include
+`Rslt.DMRGInfo`; check its `Converged` / `StopReason` and bond-dimension stability
+before using the MPS. A return after `sweep_limit` or `energy_rise` does not certify
+a ground state. Existing tracked MAT files may predate these fields. Disk
+`Rslt.EnvDir` files are rolling contraction environments, not an MPS checkpoint;
+TDVP still needs the saved `Rslt.T`, `Rslt.H`, and total `Rslt.E0`. Example MPS
+filenames do not distinguish update modes.
+
 ## Observable and output contract
 
 The driver evolves `Q|psi0>` and records the complex correlation `C(t) = <psi0|Q^dagger exp(-i*H*t) Q|psi0>*exp(i*E0*t)`. Saved results contain `time_list`, complex `Obs`, `TrunErr`, and `EE`. The output interval is `2*tau`; `tmax` may be exceeded by a final interval. Time is in inverse Hamiltonian energy units with hbar=1, not automatically picoseconds.

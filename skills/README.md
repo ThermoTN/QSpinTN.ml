@@ -19,3 +19,7 @@ Consumers should validate the schema and referenced files, record the package Gi
 When changing a MATLAB entry point, parameter, normalization, output grid, or known limitation, update the corresponding skill in the same branch. Keep each skill's YAML name/description consistent with its manifest entry. Revise the unit contract identifier when its physical meaning changes; change schema versions for incompatible structural changes. Preserve the explicit distinction between direct natural-unit results and converted physical outputs.
 
 The present skills document the checked-in interfaces and known restrictions; they do not certify numerical execution on every platform. Examples may require prepared inputs, MATLAB toolboxes, platform-specific binaries, or local saving hooks. Keep numerical validation evidence separate from documentation/schema validation.
+
+The [DMRG skill](qspintn-dmrg/SKILL.md) covers one-site, two-site and automatic
+mode switching, memory/disk environments, stopping diagnostics and MPS handoff.
+Its detailed parameter/output contract is in [the DMRG README](../ManyBodySolver/DMRG/README.md).

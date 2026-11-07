@@ -28,3 +28,28 @@ Here we provide two type window function, the Parzen window function and the sta
 
 ### Energy resolution ###
 The finite $t_{\rm max}$ leads to a finite energy resolution. To estimate the energy resolution, we consider the full width at half maximum of the Fourier transform of the window function. In practice, the energy resolution of Parzen window function is $\varepsilon\simeq 8/t_{\rm max}$. Please run **Energyresolution.m** to see the detail.
+
+
+## DMRG preparation controls
+
+The DMRG `ImportMBSolverPara.m` settings now include:
+
+```matlab
+Para.DMRGStepMax = 100; % Budget per stage
+Para.DMRGSweepTol = 1e-8; % Relative E and change of maximum bond entropy
+Para.DMRGUpdateSites = "auto"; % Or 1 / 2 for a fixed mode
+Para.DMRGEnvStorage = 'memory'; % Or 'disk'
+Para.DMRGEnvRoot = fullfile(tempdir, 'qspintn_dmrg');
+Para.DMRGKeepEnv = true; % false cleans this run's disk cache on exit
+Para.saveMPS = true; % Include T and H for the existing MPS save
+```
+
+Auto starts with two-site sweeps and can switch to one-site on an energy rise.
+The existing `MCrit`, `DK` and local `tol` values are retained. Check
+`Rslt.DMRGInfo.Converged` / `StopReason` and bond convergence before TDVP; a sweep
+limit or fixed-two-site energy-rise exit is not convergence. The existing
+`MPS/` filename and saved `Para`/`Rslt` format remain compatible with the TDVP
+loader; filenames do not distinguish update modes. Historical MAT files may lack
+these diagnostics. Disk environment files in `Rslt.EnvDir` are not MPS checkpoints.
+The complete interface is documented in the
+[DMRG README](../../ManyBodySolver/DMRG/README.md).

@@ -3,6 +3,12 @@
   "package": "QSpinTN.ml",
   "skills": [
     {
+      "name": "qspintn-bayesian-optimization",
+      "description": "Choose QSpinTN and MATLAB Bayesian optimization settings for exploratory searches, refinement, stalled thermodynamic fits, loss-scale changes and verified continuation.",
+      "path": "qspintn-bayesian-optimization/SKILL.md",
+      "method": null
+    },
+    {
       "name": "qspintn-model-building",
       "description": "Build and validate QSpinTN spin Hamiltonians and interaction maps for chains, two-dimensional lattices or arbitrary finite graphs, including one-dimensional site ordering, parameter constraints and the distinction between magnetic fields and on-site interactions.",
       "path": "qspintn-model-building/SKILL.md",

@@ -6,6 +6,8 @@ Start with [method selection](qspintn-method-selection/SKILL.md) and [units](qsp
 
 For new interactions or lattice definitions, read [model building](qspintn-model-building/SKILL.md). It explains the native model/map contract, constrained Hamiltonian presentation, energy scaling, finite-bond counting and validation before fitting, and distinguishes native models from a consumer's declarative adapter.
 
+For fitting strategy choices, read [Bayesian optimization](qspintn-bayesian-optimization/SKILL.md). It explains the package's grouped optimization settings, MATLAB acquisition functions and `ExplorationRatio`, and candidate responses to a good fit or stalled loss, including log10 total loss with stronger refinement. It distinguishes verified native continuation from a consumer's implemented history reuse; the consuming application still owns approvals, objective definitions and budgets.
+
 The [units skill](qspintn-units/SKILL.md) covers Cm, susceptibility and M–H data: natural versus physical solver outputs, J/mJ, tesla/oersted, SI/CGS susceptibility, and μB/spin versus literal μB/mol, emu/mol and A·m²/mol. It includes conversions in both directions, molar and mass normalization, and numerical examples. The existing thermal-unit JSON contract remains unchanged; documenting magnetization conversion does not add an M–H fitting adapter. An application's default experimental normalization must be recorded separately from the package's output convention.
 
 ## Discovery contract

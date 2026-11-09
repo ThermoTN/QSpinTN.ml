@@ -19,6 +19,7 @@ The `dev` branch introduces [versioned method skills](skills/README.md) for exte
 | Guidance | Contents |
 | --- | --- |
 | [Method selection](skills/qspintn-method-selection/SKILL.md) | Choosing a many-body method and checking its applicability |
+| [Bayesian optimization](skills/qspintn-bayesian-optimization/SKILL.md) | Choosing acquisition functions, exploration/refinement settings, log10-loss proposals and compatible continuation |
 | [Model building](skills/qspintn-model-building/SKILL.md) | Constructing interactions, checking conventions and validating new finite Hamiltonians |
 | [ED](skills/qspintn-ed/SKILL.md) | Finite-system thermal calculations and small-system benchmarks |
 | [iLTRG](skills/qspintn-iltrg/SKILL.md) | Infinite-chain thermal calculations and current interface limitations |
@@ -27,7 +28,9 @@ The `dev` branch introduces [versioned method skills](skills/README.md) for exte
 | [Dynamics](skills/qspintn-dynamics/SKILL.md) | Ground-state real-time TDVP correlations and saving hooks |
 | [Units](skills/qspintn-units/SKILL.md) | Cm, χ and M–H conversions; SI/CGS, μB/spin versus μB/mol, field units and molar/mass normalization |
 
-Start with method selection and units, then read the relevant solver skill; use model building when introducing new interactions. Agents can discover the nine skills through [skills/manifest.json](skills/manifest.json), which also identifies the [machine-readable thermal-unit contract](skills/contracts/thermal_units.json). The physical thermal susceptibility described by this contract is finite-field M/H in **cm³/mol (SI)** per mole of magnetic spins; its numerical value is divided by **4π** to obtain CGS cm³/mol. Direct natural-unit solver outputs require their own conversion.
+Start with method selection and units, then read the relevant solver skill; use model building when introducing new interactions and Bayesian optimization when planning or revising a fit. Agents can discover the skills through [skills/manifest.json](skills/manifest.json), which also identifies the [machine-readable thermal-unit contract](skills/contracts/thermal_units.json). The physical thermal susceptibility described by this contract is finite-field M/H in **cm³/mol (SI)** per mole of magnetic spins; its numerical value is divided by **4π** to obtain CGS cm³/mol. Direct natural-unit solver outputs require their own conversion.
+
+The Bayesian optimization guide distinguishes stronger exploration from refinement, explains how `ExplorationRatio` and acquisition functions affect that choice, and offers log10 total loss plus refinement for promising or stalled fits. It provides alternatives for an agent to assess, not a guarantee of better fits or permission to change a reviewed objective. Native MATLAB continuation and a consumer's implemented history/checkpoint rules are documented separately.
 
 The units skill also explains heat-capacity J/mJ conversion and magnetization curves in μB/spin, literal μB/mol, emu/mol and A·m²/mol, with field conversion between T and Oe and worked normalization examples. It distinguishes package output definitions from a consumer's defaults for experimental data. This documentation does not alter the thermal-unit contract or introduce a high-level M–H fitting interface.
 

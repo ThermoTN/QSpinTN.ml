@@ -4,7 +4,7 @@
   "skills": [
     {
       "name": "qspintn-bayesian-optimization",
-      "description": "Choose QSpinTN and MATLAB Bayesian optimization settings for exploratory searches, refinement, stalled thermodynamic fits, loss-scale changes and verified continuation.",
+      "description": "Choose QSpinTN and MATLAB Bayesian optimization settings for exploration, refinement, parallel evaluations, stalled fits, loss-scale changes and verified continuation.",
       "path": "qspintn-bayesian-optimization/SKILL.md",
       "method": null
     },

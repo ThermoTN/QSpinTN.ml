@@ -1,6 +1,6 @@
 ---
 name: qspintn-bayesian-optimization
-description: Choose QSpinTN and MATLAB Bayesian optimization settings for exploratory searches, refinement, stalled thermodynamic fits, loss-scale changes and verified continuation.
+description: Choose QSpinTN and MATLAB Bayesian optimization settings for exploration, refinement, parallel evaluations, stalled fits, loss-scale changes and verified continuation.
 ---
 
 # Choose Bayesian fitting strategies
@@ -78,7 +78,7 @@ Examples for autoQMagen's strategy revision, choosing **one** alternative:
 {"loss_mode":"log10","optimizer":{"search_mode":"refine"}}
 ```
 
-The current autoQMagen `refine` mode maps to ordinary EI, where ratio is ignored; `custom` preserves the specified native options. The ratio 0.1 is illustrative. If the current ratio is already smaller, 0.1 would increase exploration; compare against the active settings. Preserve explicit user choices and the reviewed budget. Do not silently change loss, bounds, stopping policy or solver because these examples exist. Follow an application's existing review gate or applicable prior authorization; do not invent a new approval requirement or re-ask a preference already given. A requested direction such as log10 still needs a concrete plan within that application's workflow.
+autoQMagen defaults to EI-plus so that ratio is active: `refine` proposes 0.1, ordinary balanced search uses 0.5, and `explore` proposes 1. An explicit user choice takes priority. These ratios are application defaults, not universal MATLAB thresholds. If the current ratio is already smaller, 0.1 would increase exploration; compare against the active settings. Ordinary EI remains an available alternative through explicit native options, but ratio then does not apply. Preserve the reviewed budget. Do not silently change loss, bounds, stopping policy or solver because these examples exist. Follow an application's existing review gate or applicable prior authorization; do not invent a new approval requirement or re-ask a preference already given. A requested direction such as log10 still needs a concrete plan within that application's workflow.
 
 ## Reuse the correct information
 
@@ -88,11 +88,24 @@ Native MATLAB [resume](https://www.mathworks.com/help/stats/bayesianoptimization
 | --- | --- |
 | Same scientific objective, parameters and native settings | Verified history; matching native checkpoint resumes with saved RNG |
 | Acquisition or ratio changes | All compatible observations seed a new optimizer identity/GP; no repeated physical evaluations needed for those observations |
+| Serial/parallel execution settings change | Preserve compatible observations and rebuild the optimizer; native resume cannot switch UseParallel |
 | Only linear ↔ log10 total loss changes | Rescore saved physical predictions, preserve raw metrics, and rebuild the GP with new scores; old GP scores cannot be resumed unchanged |
 | New observations, model, size, method or precision | Transfer suitable parameter candidates and re-evaluate under new conditions; do not import old losses as current observations |
 
 Reusing predictions requires verified, complete matching physical outputs, not merely a table of scalar loss values. The current autoQMagen fitting interface does not expose partial-temperature patching of an old evaluation; when its objective identity changes, use its candidate re-evaluation flow rather than promising only missing temperatures will be computed.
 
-autoQMagen currently exposes acquisition, ratio, deterministic flag and seed-point count as native options, with an application-level seed and batch budget. Its `auto`/`explore`/`refine`/`custom` modes and early stopping are consumer policies. Advanced native settings, variable transformations and parallelism require an implemented adapter, not just a request in a skill.
+autoQMagen exposes acquisition, ratio, deterministic flag and seed-point count as native options, with an application-level seed and batch budget. Its `auto`/`explore`/`refine`/`custom` modes and early stopping are consumer policies. Variable transformations and other advanced native settings require an implemented adapter, not just a request in a skill.
+
+## Parallel objective evaluations
+
+MATLAB [parallel Bayesian optimization](https://www.mathworks.com/help/stats/bayesopt.html) chooses multiple candidates with `UseParallel=true` (R2022b). Parallel Computing Toolbox and a functioning pool are required. Since R2026b the documented values include `"on"` and `"auto"`; do not assume the latest syntax applies to an older installation. Parallel evaluation changes the candidate sequence and generally is not reproducible from the RNG seed alone.
+
+autoQMagen's reviewed `optimizer.parallel` setting is `{"workers":2,"threads_per_worker":1}`. Serial execution is the default (`workers=1`). The hard limit is **9 simultaneously evaluated numerical candidates**; larger requests fail validation. `threads_per_worker` limits the computational threads inside each isolated QSpinTN MATLAB evaluation. Choose it by solver and available CPU/RAM; a large TN state can make memory the limiting resource. Pool creation or license failures are reported, never silently converted to serial execution.
+
+The adapter uses one MATLAB optimizer process, N pool workers coordinating native candidates, and up to N separate MATLAB forward processes. Pool workers use one computational thread and mostly wait for replies; this arrangement has startup/memory overhead and is not a promise of N-fold speedup. Each forward call retains isolated working, preference and temporary directories. Budget reservations, scoring and the scientific ledger remain on the Python controlling thread. On early stopping or pause, no new candidates are admitted; already admitted work is collected and saved. Those extra in-flight points may finish after the target was first reached, without exceeding the reserved evaluation allowance.
+
+MATLAB's `ParallelMethod` imputes outcomes for pending points when choosing another candidate; autoQMagen currently retains MATLAB's `clipped-model-prediction` default. `MinWorkerUtilization` trades candidate quality for utilization: below the threshold MATLAB may issue random candidates to fill idle workers. Neither option is `ExplorationRatio`, and neither is currently an exposed autoQMagen tuning field. See the [parallel options](https://www.mathworks.com/help/stats/bayesopt.html). A larger pool may be useful for expensive forward calculations; tiny ED calculations can be dominated by process startup and coordination.
+
+Exact-history checkpoint checks still apply. Parallel early stopping can leave saved scientific points absent from the native optimizer's completed trace. In that case autoQMagen rebuilds from the complete scientific history on continuation; it does not discard those points or resume an incomplete GP as if it contained them. Changing workers or per-evaluation threads uses a new optimizer identity while keeping compatible observations. Do not treat failed/pending values as successful objective observations.
 
 Explain each recommendation using observed quality, improvement history, objective scale, expected cost and what can be reused. Distinguish saved scientific points from normal optimizer completion; an exit failure is not convergence. Exploration can inform the landscape but does not produce calibrated physical confidence intervals or guarantee escape from every local optimum.

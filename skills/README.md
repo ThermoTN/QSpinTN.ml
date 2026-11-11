@@ -26,3 +26,10 @@ The [DMRG skill](qspintn-dmrg/SKILL.md) covers one-site, two-site and automatic
 mode switching, memory/disk environments, filename-based MPS warm starts, stopping
 diagnostics and MPS handoff.
 Its detailed parameter/output contract is in [the DMRG README](../ManyBodySolver/DMRG/README.md).
+
+The [iLTRG guide](qspintn-iltrg/SKILL.md) now documents the reusable
+`iLTRGForward` numerical interface, explicit physical units and tensor restart.
+Its executable API declaration is `ManyBodySolver/iLTRG/interface.json`; the
+skills manifest remains a documentation-discovery contract. QSpinTN owns tensor
+state compatibility and numerical diagnostics, while consumers choose processes,
+resource limits, project files and whether a new calculation should run.

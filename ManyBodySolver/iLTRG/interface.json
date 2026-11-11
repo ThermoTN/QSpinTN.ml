@@ -1,0 +1,22 @@
+{
+  "schema_version": "qspintn.iltrg.interface.v1",
+  "api_version": "qspintn.iltrg.forward.v1",
+  "entry_point": "iLTRGForward",
+  "geometry": "infinite_chain_two_site_unit_cell",
+  "spins": [0.5],
+  "interactions": "real_bilinear_nearest_neighbor_AB_BA",
+  "observables": ["Cm", "Chi"],
+  "susceptibility_definition": "finite_nonzero_principal_axis_M_over_H",
+  "units": {
+    "temperature": "K",
+    "exchange": "K",
+    "field": "T",
+    "tau": "1/K",
+    "heat_capacity": "J/(mol K)",
+    "susceptibility": "emu/mol/Oe",
+    "magnetization": "mu_B/spin",
+    "normalization": "per_mole_magnetic_spins"
+  },
+  "thermal_unit_contract": "qspintn_chi_si_cm3_v1 is unchanged; CGS output is explicitly named and differs from native SI-cm3 by 4*pi",
+  "checkpoint_schema": "owned_by_solver; validate scientific configuration and numerical source hashes"
+}

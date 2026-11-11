@@ -28,9 +28,9 @@ for i = 1:1:length(t_ab(:,1))
         case 'Sz'
             Sr = Sz;
         case 'Sz2'
-            Sl = Sz * Sz;
+            Sr = Sz * Sz;
         case 'Id'
-            Sl = Id;
+            Sr = Id;
     end
     
     if norm(Sl-Sr) < 1e-10
@@ -63,9 +63,9 @@ for i = 1:1:length(t_ba(:,1))
         case 'Sz'
             Sr = Sz;
         case 'Sz2'
-            Sl = Sz * Sz;
+            Sr = Sz * Sz;
         case 'Id'
-            Sl = Id;
+            Sr = Id;
     end
     
     if norm(Sl-Sr) < 1e-10

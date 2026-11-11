@@ -14,7 +14,7 @@ Here we provide some examples in **Example/**. Feel free to give it a try!
 
 ## Agent Method Guidance ##
 
-The `dev` branch introduces [versioned method skills](skills/README.md) for external research agents and users preparing calculations. The skills document the entry points, inputs, outputs, physical assumptions, dependencies, and known limitations of the accompanying QSpinTN revision. This addition leaves the numerical solver implementations unchanged.
+The `dev` branch introduces [versioned method skills](skills/README.md) for external research agents and users preparing calculations. The skills document the entry points, inputs, outputs, physical assumptions, dependencies, and known limitations of the accompanying QSpinTN revision. The original skill extraction did not change numerical solvers; subsequent numerical updates are documented with their interfaces below.
 
 | Guidance | Contents |
 | --- | --- |
@@ -37,6 +37,18 @@ The units skill also explains heat-capacity J/mJ conversion and magnetization cu
 [autoQMagen](https://github.com/YuanGao-qs/autoQMagen) uses this interface to combine QSpinTN method knowledge with its own fitting and execution rules, and saves the selected skills with each research run. Publishing a skill does not itself add an executable solver adapter to a downstream agent. Consumers remain responsible for supported tools, resource limits, data handling, and numerical validation.
 
 When an algorithm interface or physical convention changes, update its skill and any affected contract in the same revision. Consumers should record the package commit and content hashes; see the [interface and maintenance guide](skills/README.md). This skill extraction and documentation were developed with GPT assistance.
+
+## Reusable iLTRG forward calculation ##
+
+The [iLTRG numerical API](ManyBodySolver/iLTRG/README.md) accepts explicit AB/BA
+spin interactions and returns thermal arrays, physical-unit outputs, diagnostics
+and resumable tensor states. `iLTRGForward` and the natural-unit interfaces share
+one evolution/observable implementation. Numerical methods, conversion constants
+and physical tests belong to QSpinTN; consuming agents such as autoQMagen own
+process scheduling, CPU allocation, workspaces and reports. The API contract is
+[versioned separately](ManyBodySolver/iLTRG/interface.json) from the unchanged
+native thermal-unit contract. The new CGS susceptibility output is explicitly
+named `Chi_emu_per_mol_Oe`; it is not a relabeling of native SI-cm³/mol values.
 
 ## Maintainer ##
 * Yuan Gao, Beihang University\

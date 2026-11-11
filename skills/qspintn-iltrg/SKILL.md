@@ -5,26 +5,68 @@ description: Use QSpinTN iLTRG for repeated two-site spin-chain thermodynamics a
 
 # iLTRG
 
-All source paths below are relative to the QSpinTN.ml repository root.
+Source paths are relative to the **QSpinTN.ml repository root**.
+For standalone thermal calculations, prefer `ManyBodySolver/iLTRG/iLTRGForward.m`:
+`[result,state] = iLTRGForward(request,options)`. The numerical API version is
+`qspintn.iltrg.forward.v1`; check
+[interface.json](../../ManyBodySolver/iLTRG/interface.json) before integrating it.
+Read [the API guide](../../ManyBodySolver/iLTRG/README.md) for fields, units,
+callbacks, direct MATLAB examples and checkpoint handoff.
 
-## Entry points and inputs
+## Applicability and model preparation
 
-`ManyBodySolver/iLTRG/GetiLTRGRslt.m` calls `ManyBodySolver/iLTRG/RG_func/iTEBD.m` for a repeated two-site tensor network. This is the chain/Trotter implementation; an arbitrary finite-cluster interaction map is not sufficient input.
+The physical forward profile is validated for spin-1/2, an infinite chain with a
+repeated two-site cell, and real nearest-neighbor bilinear exchange terms.
+An arbitrary finite interaction map or a two-dimensional lattice is not input
+for this profile. Choose another method when these assumptions do not apply.
 
-Use `Example/Example_SpinChain_6_iLTRG/RunQSpinLib_iLTRG.m` as the direct-call interface: `Trotter_Name`, `Model`, `d`, natural-unit `Field.h`, `ThDQ='Cm&Chi'`, `WorkingMode`, `ManyBodySolver`, and `fileID`, then `GetiLTRGRslt(Para, Para.ThDQ)`. Its `Example/Example_SpinChain_6_iLTRG/ImportMBSolverPara.m` supplies `tau`, `N_max`, `TroOrd`, `D_max`, and `InterNum`. Verify which example-local importer MATLAB resolves. The example is itself marked not recommended; treat it as an interface reference requiring validation.
+Supply `terms_ab` and `terms_ba` as operator pairs (`x/y/z`) with `coefficient_K`.
+BA defaults to AB. Both bonds are ordered left-to-right; uniform Dz uses `xy=+Dz`
+and `yx=-Dz` on both. Keep `field_T` and diagonal `g` separate from exchange terms.
+Validate a new Hamiltonian against a small independent matrix before fitting.
+`Chi` requires a single nonzero principal-axis field and means finite-field M/H.
+The mere availability of this solver does not enable a consuming application's
+fitting adapter; check its supported execution tools separately.
 
-`ManyBodySolver/iLTRG/InitHam_trotter.m` constructs the alternating two-site Hamiltonians. Validate the Trotter terms and field convention before interpreting a different model or anisotropic g tensor.
+## Numerical choices
 
-## Grids, outputs, and convergence
+- `tau` is in K^-1 and `beta_n=2*n*tau`; `energy_scale_K` is handled internally.
+  When reducing tau, increase N_max to retain the low-temperature coverage.
+- Cm uses a centered lnZ derivative. Keep an extra step beyond the lowest
+  desired T. Missing derivative endpoints are omitted, never extrapolated.
+- Compare multiple D_max and tau values at common physical temperatures.
+  Varying both together measures combined change, not separate error sources.
+- Inspect transfer residuals, actual bond dimensions, cutoff warnings and
+  negative outputs. Do not silently smooth or clip numerical defects.
+- This implementation uses the existing first-order Trotter sequence.
+  Small-D unit tests are not proof of convergence in the target low-T regime.
 
-`ManyBodySolver/iLTRG/ThDQ/Tem_cal.m` uses `beta_i = 2*tau*i`. Reducing `tau` without increasing `N_max` loses low-temperature coverage. Compare multiple `tau` and `D_max` values at a common physical temperature window. The available example uses first-order Trotter evolution.
+## Outputs and continuation
 
-Heat capacity comes from derivatives of `LnZ`; endpoints are removed and `T`, `Cm`, and `M` are interpolated again. `LnZ` is retained on the earlier grid and must not be paired blindly with the final `T`. Inspect array lengths and grids explicitly. Direct outputs are in natural units; plotting `M/norm(Field.h)` as in the example does not itself produce molar SI susceptibility.
+`result.data` has explicit experimental units: Cm in J/(mol K), Chi in
+emu/mol/Oe, per mol spin. `result.raw` also keeps natural observables, μB/spin
+moments, and explicitly named `Chi_qspintn_native`. The native convention is
+4π times CGS; the existing thermal-unit contract is unchanged. Read the
+[units skill](../qspintn-units/SKILL.md) when combining these with other sources.
+Conversions belong to `UtilityFunc/ConvertThermalObservables.m`; shared constants
+are in `QSpinThermalUnits.m` and preserve `GetUnitCon` values.
 
-## Current implementation limits
+Use `options.checkpoint_path` for file restart or `options.state` for an in-memory
+state. `pause_after_steps` or `should_stop` can pause between complete iterations;
+`on_progress` reports state to the caller. The application chooses paths, budgets,
+threads and whether to resume; the solver verifies model/settings/source identity.
+Changed numerical conditions require a fresh state. The API never creates
+application directories or calls an LLM.
 
-- A pure `'Chi'` request leaves `LnZ_l` undefined in `GetiLTRGRslt`; the example's `'Cm&Chi'` route avoids that branch. Do not assume the generic `GetResult(..., 'Chi')` route works for iLTRG.
-- In `InitHam_trotter`, the right-operator branches for `'Sz2'` and `'Id'` assign `Sl` instead of `Sr`. Models using these terms require a code correction and an independent Hamiltonian check before numerical use.
-- The direct example uses a vector natural field; the shared physical configuration uses field magnitude and direction. Trace the selected route before converting units or g factors.
+## Natural-unit interfaces
 
-Check a known chain limit or controlled comparison with increasing finite ED chains, accounting for the different boundary conditions and thermodynamic limit.
+Existing `GetiLTRGRslt`/`iTEBD` now share `iLTRGEvolve`; observation wrappers share
+`iLTRGObserve`. Pure Chi works, all result arrays use their native common grid,
+and no lower-temperature interpolation is added. `InterNum` no longer controls
+this wrapper's grid. Bare spin projections and natural temperatures are not the
+physical API's experimental units. The right-side Id/Sz2 assignment in
+`InitHam_trotter` is corrected; that does not expand the validated physical
+forward profile to arbitrary spin or interaction classes.
+
+Numerical validation lives in `tests/test_iltrg_forward.m`: free spins, independent
+DM dimers, unit/energy scaling, observable normalization and exact restart.

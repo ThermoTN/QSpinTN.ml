@@ -1,38 +1,19 @@
-function [ Rslt ] = GetiLTRGRslt( Para, ThDQ )
-
-[Rslt.beta, Rslt.T] = Tem_cal(Para);  % get temperature points
-
-% //Compute specific heat
-if strcmp(ThDQ, 'Cm') || strcmp(ThDQ, 'Cm&Chi')
-    [LnZ_l, Ml] = iTEBD(Para, Rslt.T);              % call iLTRG to compute lnZ
-    Rslt.Cm = Cm_cal(LnZ_l, Rslt.beta, Para);
-    Rslt.Cm = Rslt.Cm(2:1:(end-1));
-    Rslt.M = Ml(2:1:(end-1));
+function Rslt = GetiLTRGRslt(Para, ThDQ)
+%GETILTRGRSLT Natural-unit result on one consistent, non-extrapolated grid.
+% M is bare <S> along the effective field; use an explicit unit conversion.
+if ~ismember(ThDQ,{'Cm','Chi','Cm&Chi'})
+    error('qspintn:iltrg:Request','ThDQ must be Cm, Chi or Cm&Chi.');
+end
+[~,~,raw]=iTEBD(Para);
+if strcmp(ThDQ,'Chi')
+    indices=(1:Para.N_max)';
 else
-    Rslt.Cm = 0;
+    if Para.N_max<3, error('qspintn:iltrg:Request','Cm needs at least three steps.'); end
+    indices=(2:Para.N_max-1)';
 end
-Rslt.LnZ = LnZ_l(2:1:(end-1));
-Rslt.beta = Rslt.beta(2:1:(end-1));
-Rslt.T = Rslt.T(2:1:(end-1));
-
-Tp = Rslt.T;
-T_min = min(Rslt.T) * 0.99;
-T_max = max(Rslt.T) * 0.99;
-Delta = (log(T_max)-log(T_min))/Para.InterNum;
-Rslt.T = exp(log(T_max):-Delta:log(T_min));
-
-if strcmp(ThDQ, 'Cm') || strcmp(ThDQ, 'Cm&Chi')
-    Rslt.Cm = interp1(Tp, Rslt.Cm, Rslt.T);
-    Rslt.Cm = transpose(Rslt.Cm);
+Rslt=struct('T',raw.T_K(indices),'beta',raw.beta(indices), ...
+    'LnZ',raw.lnZ(indices),'M',raw.spin_projection(indices), ...
+    'Cm',raw.C_natural(indices));
+Rslt.grid='native; no interpolation or extrapolation';
+Rslt.units='natural per spin; T is in the model energy unit';
 end
-
-if norm(Para.Field.h) ~= 0 && (strcmp(ThDQ, 'Chi') || strcmp(ThDQ, 'Cm&Chi'))
-    Rslt.M = interp1(Tp, Rslt.M, Rslt.T);
-    Rslt.M = transpose(Rslt.M);
-else
-    Rslt.M = 0;
-end
-Rslt.T = transpose(Rslt.T);
-Rslt.beta = 1 ./ Rslt.T;
-end
-

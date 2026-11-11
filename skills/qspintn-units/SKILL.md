@@ -23,6 +23,18 @@ description: Convert QSpinTN Cm, susceptibility and M-H data between natural, SI
 
 直接调用其他 solver 时核对其算符、除以 `L` 的位置和返回值；独立 iLTRG 示例、DMRG、实时 TDVP 不因位于同一仓库就自动具有上述契约。`GetResult` 的 `M` 字段只在相应非零场 Chi 分支中赋值，不能假定所有调用都会返回它。
 
+## iLTRG 显式物理接口
+
+`ManyBodySolver/iLTRG/iLTRGForward.m` 使用公共函数
+`UtilityFunc/ConvertThermalObservables.m`；常数来自 `QSpinThermalUnits.m`，
+与 `GetUnitCon.m` 共用。`result.raw` 同时明确命名自然量和物理量：
+`C_natural`、`spin_projection`、`Cm_J_per_mol_K`、`M_muB_per_spin`、
+`Chi_emu_per_mol_Oe` 和 `Chi_qspintn_native`。
+其中 `Chi_qspintn_native = 4*pi*Chi_emu_per_mol_Oe`，既有契约不变。
+`result.data` 的 χ 已是实验 CGS 单位，不能再次按 native → CGS 除以 4π。
+该转换目前要求主轴磁场；零场 M/H 未定义。`GetiLTRGRslt`/`iTEBD`
+仍返回自然量，需按实际算符和磁场约定转换。
+
 ## 常数、温度与场
 
 复现包内结果时使用 `GetUnitCon.m` 的舍入常数：

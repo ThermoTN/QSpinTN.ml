@@ -45,7 +45,7 @@ if numel(h) ~= 3 || ~all(isfinite(h)) || ~isreal(h) || norm(h) == 0
         'Spin projection requires a real, nonzero three-component field.');
 end
 h = h/norm(h);
-[Sx,Sy,Sz] = SpinOp(Para.d);
+[Sx,Sy,Sz,spin] = physical_spin_operators(Para);
 MOp = h(1)*Sx+h(2)*Sy+h(3)*Sz;
 
 % This double layer represents rho(beta/2)*rho(beta/2)^dagger. Insert the
@@ -76,7 +76,6 @@ if ~isfinite(raw_m) || imaginary_m > max(100*tol,1e-10)*max(1,abs(real(raw_m)))
         'Spin expectation is nonfinite or has a significant imaginary part (%.6g).', imaginary_m);
 end
 magnetization = real(raw_m);
-spin = (Para.d-1)/2;
 if abs(magnetization) > spin+max(1000*tol,1e-9)
     error('qspintn:iltrg:UnphysicalMagnetization', ...
         'Spin expectation %.16g exceeds the spin bound %.16g.', magnetization,spin);
@@ -84,6 +83,24 @@ end
 diagnostics.partition = partition;
 diagnostics.partition_relative_difference = normalization_difference;
 diagnostics.magnetization_imaginary = imaginary_m;
+end
+
+function [Sx,Sy,Sz,spin]=physical_spin_operators(Para)
+sites=setting(Para,'physical_sites_per_tensor',1);
+if isequal(sites,1)
+    [Sx,Sy,Sz]=SpinOp(Para.d);
+    spin=(Para.d-1)/2;
+elseif isequal(sites,2) && Para.d==4
+    % The d=4 local space is two physical spin-1/2 sites, NOT spin 3/2.
+    % Insert their average; all resulting moments remain per physical spin.
+    [sx,sy,sz]=SpinOp(2);
+    Sx=(kron(sx,eye(2))+kron(eye(2),sx))/2;
+    Sy=(kron(sy,eye(2))+kron(eye(2),sy))/2;
+    Sz=(kron(sz,eye(2))+kron(eye(2),sz))/2;
+    spin=.5;
+else
+    error('qspintn:iltrg:BlockProfile','Unsupported physical-spin observable representation.');
+end
 end
 
 function T = inserted_transfer(T,inserted,original,L)

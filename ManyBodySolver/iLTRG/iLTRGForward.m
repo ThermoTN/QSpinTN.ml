@@ -2,7 +2,8 @@ function [result, state] = iLTRGForward(request, options)
 %ILTRGFORWARD Physical-unit, explicit-model infinite-chain thermodynamics.
 % [result,state] = iLTRGForward(request,options) accepts MATLAB structs.
 % Interactions are in K, field in T, tau in K^-1. AB and BA bonds both
-% follow the physical left-to-right orientation. See README.md here.
+% follow the physical left-to-right orientation. Optional terms_nnn adds
+% uniform i -> i+2 interactions via two-physical-spin blocks. See README.md.
 % This entry point does not create project directories, JSON, CSV or logs.
 % Copyright (c) 2025 ThermoTN. MIT License; see repository LICENSE.
 if nargin<2, options=struct(); end
@@ -17,11 +18,21 @@ units=QSpinThermalUnits();
 Para=struct('d',round(2*request.spin+1),'D_max',request.D_max, ...
     'N_max',request.N_max,'tau',request.tau*request.energy_scale_K, ...
     'energy_scale_K',request.energy_scale_K, ...
+    'physical_sites_per_tensor',1,'physical_spin',request.spin, ...
     'transfer_tolerance',request.transfer_tolerance, ...
     'transfer_max_iterations',request.transfer_max_iterations,'request',request);
 Para.Field.h=units.muB_over_kB_K_per_T*(request.g.*request.field_T)/request.energy_scale_K;
-[Hab,Hba]=InitHam_trotter(term_table(request.terms_ab,request.energy_scale_K), ...
-    term_table(request.terms_ba,request.energy_scale_K),Para);
+t_ab=term_table(request.terms_ab,request.energy_scale_K);
+t_ba=term_table(request.terms_ba,request.energy_scale_K);
+t_nnn=term_table(request.terms_nnn,request.energy_scale_K);
+if isempty(t_nnn)
+    [Hab,Hba]=InitHam_trotter(t_ab,t_ba,Para);
+    profile='nearest_neighbor_spin_half'; maximum_neighbor_distance=1;
+else
+    Para.d=4; Para.physical_sites_per_tensor=2;
+    [Hab,Hba]=InitHam_J1J2(t_ab,t_ba,t_nnn,Para);
+    profile='nn_nnn_spin_half_two_site_blocks'; maximum_neighbor_distance=2;
+end
 if isscalar(Hab), Hab=Hab*eye(Para.d^2); end
 if isscalar(Hba), Hba=Hba*eye(Para.d^2); end
 [raw,state,info]=iLTRGEvolve(Para,Hab,Hba,options);
@@ -40,6 +51,11 @@ temperature=raw.T_K(mask); values=values(mask);
 summary=rmfield(info,{'sources','science'});
 summary.api_version='qspintn.iltrg.forward.v1';
 summary.observable=request.observable; summary.unit=unit;
+summary.model_profile=profile;
+summary.maximum_neighbor_distance=maximum_neighbor_distance;
+summary.tensor_local_dimension=Para.d;
+summary.physical_sites_per_tensor=Para.physical_sites_per_tensor;
+summary.physical_sites_per_unit_cell=2*Para.physical_sites_per_tensor;
 summary.molar_basis=units.molar_basis; summary.points=numel(temperature);
 summary.tau_K_inv=request.tau; summary.requested_T_min_K=request.T_min;
 summary.singular_value_relative_cutoff=1e-8;
@@ -61,7 +77,7 @@ end
 
 function req=validate_request(req)
 defaults=struct('spin',.5,'energy_scale_K',1,'transfer_tolerance',1e-12, ...
-    'transfer_max_iterations',10000);
+    'transfer_max_iterations',10000,'terms_nnn',[]);
 required={'terms_ab','field_T','g','observable','tau','D_max','N_max','T_min'};
 allowed=[fieldnames(defaults);required(:);{'terms_ba'}];
 if ~isstruct(req) || ~isscalar(req) || ~all(ismember(fieldnames(req),allowed))
@@ -103,8 +119,9 @@ end
 
 function out=term_table(terms,scale)
 if isempty(terms), out=cell(0,3); return; end
-if ~isstruct(terms) || ~all(isfield(terms,{'operators','coefficient_K'}))
-    error('qspintn:iltrg:Terms','Terms require operators and coefficient_K.');
+if ~isstruct(terms) || ~all(isfield(terms,{'operators','coefficient_K'})) || ...
+        ~all(ismember(fieldnames(terms),{'operators','coefficient_K'}))
+    error('qspintn:iltrg:Terms','Terms accept only operators and coefficient_K; their range is defined by the request field.');
 end
 out=cell(numel(terms),3);
 for k=1:numel(terms)

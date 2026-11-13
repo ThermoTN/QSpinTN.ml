@@ -17,6 +17,16 @@ Keep a list of independent parameters, fixed values and equality constraints. Su
 
 For native QSpinTN models, implement a metadata function `SpinModel/SpinModel_<Name>.m` and an interaction map in `SpinModel/IntrcMap_Folder/`. Review `SpinModel_XXZtest.m`, `IntrcMap_XXZtest.m`, `UtilityFunc/GetModel.m` and `UtilityFunc/PassPara.m` together: metadata and the map must agree on parameter order, spin, geometry, g directions and scale. Declaring `AvlbSolver` does not verify that a solver can execute the model. iLTRG additionally needs its own compatible Trotter construction.
 
+For the direct infinite-chain iLTRG API, a new native model file is unnecessary
+when the Hamiltonian fits its spin-1/2 real-bilinear profile: use `terms_ab`,
+`terms_ba` and optional uniform `terms_nnn` for physical distances one and two.
+The distance-two path groups physical `(A,B)` sites into dimension-4 blocks;
+its block-local and block-bond terms are built separately from a finite
+interaction map. Follow the [iLTRG skill](../qspintn-iltrg/SKILL.md) for directed
+DM signs, field sharing and per-physical-spin normalization. A 1D ordering of a
+higher-dimensional graph does not meet this repeated-chain contract. Consumers
+such as autoQMagen need their own tested range-two adapter before fitting it.
+
 For a consumer that accepts a declarative model, use that consumer's versioned schema and supported operators. autoQMagen retains `aqm.model_spec.v1` for spin-1/2 xx/yy/zz exchange and provides `aqm.model_spec.v2` for all nine real bilinear products `S_i^alpha S_j^beta` (alpha,beta in x,y,z), including DM and symmetric off-diagonal exchange. Both accept chain distances or explicit finite bonds and use ED. It resolves the declaration to a fixed adapter and calls QSpinTN's existing ED path without adding a SpinModel file. Its schema, model hashes, fitting bounds and execution restrictions belong to autoQMagen (`docs/MODEL_SPEC.md` and `autoqmagen/model_spec.py` there); they do not extend QSpinTN's native API. A Heisenberg J1–J2 chain needs three components for each distance, not only SzSz.
 
 ## Declarative bilinear models without new package files

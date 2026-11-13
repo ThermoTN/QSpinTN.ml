@@ -22,7 +22,7 @@
     },
     {
       "name": "qspintn-iltrg",
-      "description": "Use QSpinTN iLTRG for repeated two-site spin-chain thermodynamics and assess Trotter, bond-dimension, and output-grid limitations.",
+      "description": "Use QSpinTN iLTRG for spin-1/2 nearest- and next-nearest-neighbor chain thermodynamics, including J1-J2 and directed DM terms, and assess grouping, Trotter, bond-dimension and output-grid limitations.",
       "path": "qspintn-iltrg/SKILL.md",
       "method": "iLTRG"
     },

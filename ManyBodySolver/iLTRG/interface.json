@@ -2,9 +2,30 @@
   "schema_version": "qspintn.iltrg.interface.v1",
   "api_version": "qspintn.iltrg.forward.v1",
   "entry_point": "iLTRGForward",
-  "geometry": "infinite_chain_two_site_unit_cell",
+  "geometry": "infinite_chain_repeated_physical_AB_cell",
   "spins": [0.5],
-  "interactions": "real_bilinear_nearest_neighbor_AB_BA",
+  "interactions": "real_bilinear_nearest_neighbor_AB_BA_and_uniform_next_nearest_neighbor",
+  "maximum_neighbor_distance": 2,
+  "optional_request_fields": ["terms_ba", "terms_nnn", "spin", "energy_scale_K", "transfer_tolerance", "transfer_max_iterations"],
+  "profiles": [
+    {
+      "name": "nearest_neighbor_spin_half",
+      "selection": "terms_nnn omitted or empty",
+      "maximum_neighbor_distance": 1,
+      "tensor_local_dimension": 2,
+      "physical_sites_per_tensor": 1,
+      "physical_sites_per_unit_cell": 2
+    },
+    {
+      "name": "nn_nnn_spin_half_two_site_blocks",
+      "selection": "terms_nnn nonempty, including explicitly zero coefficients",
+      "maximum_neighbor_distance": 2,
+      "tensor_local_dimension": 4,
+      "physical_sites_per_tensor": 2,
+      "physical_sites_per_unit_cell": 4,
+      "next_nearest_terms": "same real bilinear tensor on every physical i-to-i+2 bond; AA and BB both left-to-right"
+    }
+  ],
   "observables": ["Cm", "Chi"],
   "susceptibility_definition": "finite_nonzero_principal_axis_M_over_H",
   "units": {

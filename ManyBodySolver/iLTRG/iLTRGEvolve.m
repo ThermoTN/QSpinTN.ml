@@ -1,19 +1,34 @@
 function [raw, state, info] = iLTRGEvolve(Para, Hab, Hba, options)
 %ILTRGEVOLVE Shared two-site iLTRG evolution with optional durable state.
 % Para.tau is dimensionless; Para.energy_scale_K defaults to 1. Output beta
-% and T_K use the corresponding physical scale. No project files are made.
+% and T_K use the corresponding physical scale. Optional
+% physical_sites_per_tensor=2 denotes two physical spin-1/2 sites per d=4
+% tensor; lnZ and Cm are normalized per physical spin. No project files made.
 % Copyright (c) 2025 ThermoTN. MIT License; see repository LICENSE.
 if nargin<4, options=struct(); end
 options = validate_options(options);
 if ~isfield(Para,'energy_scale_K'), Para.energy_scale_K=1; end
 if ~isfield(Para,'transfer_tolerance'), Para.transfer_tolerance=1e-12; end
 if ~isfield(Para,'transfer_max_iterations'), Para.transfer_max_iterations=10000; end
+if ~isfield(Para,'physical_sites_per_tensor'), Para.physical_sites_per_tensor=1; end
 for name={'tau','energy_scale_K','transfer_tolerance'}
     validateattributes(Para.(name{1}),{'numeric'},{'scalar','real','finite','positive'});
 end
 for name={'d','D_max','N_max','transfer_max_iterations'}
     validateattributes(Para.(name{1}),{'numeric'},{'scalar','real','finite','positive','integer'});
 end
+validateattributes(Para.physical_sites_per_tensor,{'numeric'},{'scalar','real','finite','integer','positive'});
+if Para.physical_sites_per_tensor==1
+    physical_spin=(Para.d-1)/2;
+elseif Para.physical_sites_per_tensor==2 && Para.d==4
+    physical_spin=.5;
+else
+    error('qspintn:iltrg:BlockProfile','Only one spin or a d=4 block of two spin-1/2 sites is supported.');
+end
+if isfield(Para,'physical_spin') && ~isequal(Para.physical_spin,physical_spin)
+    error('qspintn:iltrg:BlockProfile','Physical spin disagrees with the tensor representation.');
+end
+Para.physical_spin=physical_spin;
 validateattributes(Para.Field.h,{'numeric'},{'vector','numel',3,'real','finite'});
 for h={Hab,Hba}
     matrix=h{1};
@@ -74,7 +89,8 @@ try
         [lambda,m,diagnostic,env]=iLTRGObserve(Ta,La,Tb,Lb,Para,need_m,env);
         raw.beta(it)=2*physical_tau*it;
         raw.T_K(it)=1/raw.beta(it);
-        raw.lnZ(it)=checked_real(lgnorm+log(positive_real(lambda,'transfer eigenvalue'))/2,'lnZ');
+        raw.lnZ(it)=checked_real((lgnorm+log(positive_real(lambda,'transfer eigenvalue'))/2) ...
+            /Para.physical_sites_per_tensor,'lnZ per physical spin');
         raw.spin_projection(it)=checked_real(m,'spin projection');
         raw.actual_D_a(it)=size(La,1); raw.actual_D_b(it)=size(Lb,1);
         raw.transfer{it}=diagnostic;
@@ -128,6 +144,8 @@ for k=1:numel(names), raw.(names{k})=raw.(names{k})(1:iteration); end
         p=struct('status',status,'iteration',iteration,'N_max',Para.N_max, ...
             'identity',identity,'resumed_from_iteration',resumed_from_iteration, ...
             'D_max',Para.D_max,'elapsed_seconds',elapsed_prior+toc(t0));
+        p.physical_sites_per_tensor=Para.physical_sites_per_tensor;
+        p.physical_spin=Para.physical_spin;
         if iteration>0
             p.T_K=raw.T_K(iteration); p.actual_D_a=raw.actual_D_a(iteration);
             p.actual_D_b=raw.actual_D_b(iteration); p.transfer=raw.transfer{iteration};

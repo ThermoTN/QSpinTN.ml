@@ -41,7 +41,10 @@ When an algorithm interface or physical convention changes, update its skill and
 ## Reusable iLTRG forward calculation ##
 
 The [iLTRG numerical API](ManyBodySolver/iLTRG/README.md) accepts explicit AB/BA
-spin interactions and returns thermal arrays, physical-unit outputs, diagnostics
+spin interactions and optional uniform next-nearest-neighbor `terms_nnn` for
+spin-1/2 J1–J2 chains, including real anisotropic and directed DM terms. The
+range-two path groups two physical spins while retaining per-physical-spin
+normalization and the same physical temperature convention. It returns thermal arrays, physical-unit outputs, diagnostics
 and resumable tensor states. `iLTRGForward` and the natural-unit interfaces share
 one evolution/observable implementation. Numerical methods, conversion constants
 and physical tests belong to QSpinTN; consuming agents such as autoQMagen own
@@ -49,6 +52,9 @@ process scheduling, CPU allocation, workspaces and reports. The API contract is
 [versioned separately](ManyBodySolver/iLTRG/interface.json) from the unchanged
 native thermal-unit contract. The new CGS susceptibility output is explicitly
 named `Chi_emu_per_mol_Oe`; it is not a relabeling of native SI-cm³/mol values.
+Nearest-neighbor calls remain available through the same `forward.v1` API.
+The new package capability does not automatically expand a consumer's fitting
+adapter; in particular, autoQMagen needs a separate range-two integration.
 
 ## Maintainer ##
 * Yuan Gao, Beihang University\

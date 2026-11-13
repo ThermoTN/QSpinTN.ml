@@ -35,6 +35,26 @@ description: Convert QSpinTN Cm, susceptibility and M-H data between natural, SI
 该转换目前要求主轴磁场；零场 M/H 未定义。`GetiLTRGRslt`/`iTEBD`
 仍返回自然量，需按实际算符和磁场约定转换。
 
+## 逐候选能标与单位边界
+
+多体求解器可共用一个归一化规则：先将 factor、绑定和比例参数展开成以 K 表示的
+物理相互作用系数 c，再把所有计算磁场投影到 g 主轴，取
+`E0=max(max(abs(c)), max((muB/kB)*norm(g.*B)))`。同一候选的各条曲线共用 E0，
+仅相互作用与有效磁场全部为零时用 1 K 并记录原因。此数值尺度不是 CW 实测能标，
+也不是全系统谱宽，不额外乘自旋、键数或体系尺寸。
+
+这是 autoQMagen 拟合适配层采用的规则；直接调用旧 GetModel 仍须核对原生能标约定，
+直接 iLTRGForward 仍由调用者提供 `energy_scale_K` 和物理 `request.tau`。
+相互作用及场能量除以 E0 后，以同一 E0 处理温度和数值步长。ED 自然单位
+`beta=E0/T_K`，而 iLTRGForward 的 `raw.beta` 已是 K⁻¹，只取 `T_K=1/raw.beta`，
+不能再次乘 E0。公开物理 API 的 `request.tau=tau_dimensionless/E0` K⁻¹；
+拟合中应使用本候选解析后的实际 tau，不能直接复制无量纲上限。
+
+例如 iLTRG 拟合默认上限 0.01、E0=2 K 时覆盖至 50 K；需要 100 K 时，autoQMagen
+按默认裕量 0.99 取实际 tau=0.00495，物理步长 0.002475 K⁻¹。适配器核对低温
+演化步数，求解器仍需 D/tau 收敛验证。XTRG/tanTRG 各自的网格与步长规则不能用
+这条 iLTRG 中心差分覆盖公式替代。源数据单位换算、能标归一化、损失归一化应分别记录。
+
 ## 常数、温度与场
 
 复现包内结果时使用 `GetUnitCon.m` 的舍入常数：

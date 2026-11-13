@@ -30,10 +30,36 @@ fitting adapter; check its supported execution tools separately.
 
 ## Numerical choices
 
-- `tau` is in K^-1 and `beta_n=2*n*tau`; `energy_scale_K` is handled internally.
-  When reducing tau, increase N_max to retain the low-temperature coverage.
+- `iLTRGForward(request)` takes physical `request.tau` in K^-1:
+  `beta_n=2*n*request.tau`. Its internal `Para.tau` is dimensionless and equals
+  `request.tau*energy_scale_K`. If a caller exposes dimensionless tau, convert it
+  once at this API boundary: `request.tau=tau_dimensionless/energy_scale_K`.
+  The direct API accepts an explicit positive energy_scale_K for each request;
+  it does not choose an optimizer policy or shrink request.tau automatically.
+  A fitting application may derive E0 per candidate from the largest absolute
+  physical interaction coefficient and largest Zeeman field energy across its
+  evaluated curves, using one E0 for that candidate. Expand ratios/factors first.
+  Keep E0 and the resolved physical step unchanged within a tensor continuation.
+  For example, actual dimensionless tau=0.01 and E0=2 K mean request.tau=0.005 K^-1.
+  Do not multiply or divide twice. Reducing the physical step requires increasing
+  N_max to retain low-T coverage; changing E0 while holding physical tau and
+  physical coefficients fixed is only a change of internal energy representation.
 - Cm uses a centered lnZ derivative. Keep an extra step beyond the lowest
   desired T. Missing derivative endpoints are omitted, never extrapolated.
+  Its highest finite native point is `1/(4*request.tau)` K, equivalently
+  `energy_scale_K/(4*tau_dimensionless)`. Raw finite-field Chi starts one step
+  earlier, at `1/(2*request.tau)` K; a consuming fitter may enforce a common
+  narrower Cm-compatible window, so check its contract rather than assuming it.
+- autoQMagen fitting treats dimensionless tau as an approved upper bound (default
+  0.01, D=50). If the candidate grid cannot cover Tmax, its adapter uses
+  tau_effective=coverage_safety_factor*E0/(4*Tmax), default factor 0.99, then passes
+  tau_effective/E0 to this API. Otherwise it keeps the requested bound. The
+  application checks low-T steps/budgets before evolving all curves, records
+  actual values, and does not crop data. These are consuming-application rules,
+  not behavior of a standalone iLTRGForward call.
+  Its coverage preflight follows the API's actual multiply/divide round trip;
+  at a floating-point endpoint it can reduce the input step by a few ULPs,
+  recording that adjustment instead of allowing extrapolation.
 - Compare multiple D_max and tau values at common physical temperatures.
   Varying both together measures combined change, not separate error sources.
 - Inspect transfer residuals, actual bond dimensions, cutoff warnings and

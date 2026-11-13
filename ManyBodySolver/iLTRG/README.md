@@ -39,6 +39,37 @@ exchange and field energies are divided by the energy scale and the evolution
 step is multiplied by it. `N_max` must cover the target temperature and leave
 one extra neighbor for the centered heat-capacity derivative.
 
+The two tau conventions are related by
+`tau_dimensionless = request.tau * energy_scale_K`.
+The low-level `iLTRGEvolve` field `Para.tau` is dimensionless; the public physical
+API field `request.tau` remains in K^-1. A caller that exposes dimensionless tau
+must supply `request.tau=tau_dimensionless/energy_scale_K`, exactly once.
+For example, actual dimensionless tau=0.01 and a reference energy of 2 K mean
+`request.tau=0.005 K^-1`. That gives `beta_n=2*n*0.005 K^-1`, and the highest
+finite centered Cm point is 50 K. With a 1 K reference it is 25 K.
+This direct API accepts the caller's positive `energy_scale_K`; it does not select
+an optimizer-wide or candidate-dependent scaling policy by itself. Preserve the
+request's scale and physical step when resuming its tensor checkpoint.
+
+The autoQMagen fitting adapter derives E0 separately for each candidate from the
+maximum absolute physical interaction coefficient and the largest Zeeman field
+energy across all curves in that evaluation. Exactly all-zero interactions and
+fields use 1 K; no separate reference is imposed in ModelSpec. The application's
+dimensionless tau setting is an upper bound. When E0/(4*tau) does not cover Tmax,
+it uses `tau_effective=coverage_safety_factor*E0/(4*Tmax)` (default factor 0.99),
+then passes `request.tau=tau_effective/E0`. Otherwise it retains the requested
+upper bound. It checks the revised low-temperature step count before numerical
+execution and records the actual E0 and step. A standalone call here does not
+apply that fitting policy or automatically adapt its physical tau.
+
+In general `Tmax_Cm=1/(4*request.tau)=energy_scale_K/(4*tau_dimensionless)`.
+Finite-field Chi has a native point at the first evolution step, hence
+`Tmax_Chi=1/(2*request.tau)`. An application may use the shared Cm coverage bound
+for joint fitting. These are grid endpoints, not Trotter-error or convergence
+guarantees. Changing the reference energy while fixing dimensionless tau changes
+the physical step; preserving the same physical calculation requires preserving
+`request.tau` and the physical coefficients, as tested by the energy-scale checks.
+
 Optional scientific settings are `transfer_tolerance` (default 1e-12) and
 `transfer_max_iterations` (10000). Failed fixed-point convergence, inconsistent
 left/right eigenvalues, non-Hermitian input or unphysical spin projection cause

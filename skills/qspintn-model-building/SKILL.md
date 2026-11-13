@@ -80,7 +80,21 @@ The XXZtest map represents y exchange with `Yreal = imag(Sy)` and a negative coe
 
 ## Energy and field conventions
 
-`GetModel(conf,g,values)` sets ES to the absolute value of `Para_EnScale`; that selected physical coupling must be nonzero. K parameters are divided by ES, whereas parameters marked ES are already dimensionless. A custom consumer using a fixed positive reference energy must set ES and scale **every** coupling consistently; it must not pass through a zero coupling anchor. Changing this reference must leave physical predictions unchanged.
+The legacy direct `GetModel(conf,g,values)` convention selects ES from the absolute
+value of `Para_EnScale`, which must be nonzero on that path. K parameters are divided
+by ES; parameters marked ES may be dimensionless ratios. Inspect their actual map
+use: an XXZ ratio Delta can produce a physical J*Delta term and is not itself K.
+
+A consumer can instead normalize each evaluated candidate using
+`E0=max(max(abs(physical interaction coefficients)), max((muB/kB)*norm(g.*B)))`
+over all of that candidate's field curves. Expand factors, ties and ratio products
+before taking the maximum; keep one E0 across the curves. Only exactly all-zero
+interactions and fields use a recorded 1 K reference. autoQMagen's fitting adapter
+uses this policy, with no fixed energy_scale_K in the declarative ModelSpec. It
+must preserve the physical map and rescale every energy term, not merely replace
+conf.ES. Numerical convergence and supported-model checks remain independent.
+A change of reference alone preserves physics only when physical temperatures,
+fields and solver accuracy (including physical imaginary-time steps) are retained.
 
 `PassPara` supplies `Para.Model`, `Para.Geo`, `Para.d`, `Para.L`, `Para.IntrcMap_Name` and the field/g information. Physical input B is in tesla. The existing field path yields HZ/kB = −(μB/kB)Σi,α gα Bα Siα. Read [units](../qspintn-units/SKILL.md) before converting thermal results, and [ED](../qspintn-ed/SKILL.md) for the current finite-field M/H and output-grid conventions.
 

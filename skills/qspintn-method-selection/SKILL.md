@@ -18,6 +18,15 @@ All source paths in this skill collection are relative to the QSpinTN.ml reposit
 
 For material thermodynamics, start with high-temperature data and a tractable finite ED model to constrain energy scales and g factors, then compare larger sizes and suitable thermal tensor methods at lower temperature. Preserve the Hamiltonian, field direction, and [unit convention](../qspintn-units/SKILL.md) across stages. A good high-temperature fit alone does not uniquely determine the effective Hamiltonian.
 
+When comparing solvers, preserve physical K/T inputs while applying the chosen
+energy-normalization policy consistently. autoQMagen derives E0 per candidate
+from physical couplings and all evaluated field energies; changes between
+candidates under the approved rule do not change the model or require a new
+strategy. This scale policy does not provide a common time-step definition:
+ED has no Trotter tau, iLTRG uses its own centered-Cm coverage condition, and
+XTRG/tanTRG retain their native schedules. Read the [units skill](../qspintn-units/SKILL.md)
+for physical/native beta and tau boundaries; independent convergence is still needed.
+
 Select based on the requested observable, geometry/interaction map, local spin dimension, field and temperature coverage, numerical precision, and actual runtime resources. Increasing accuracy and increasing system size solve different problems; assess both. On overlapping accessible systems, compare methods before using larger calculations to discriminate model parameters.
 
 Do not select DMRG as a direct finite-temperature Cm solver or real-time TDVP as imaginary-time thermal evolution. Do not infer thermodynamic-limit validity solely from use of a tensor network. Current iLTRG restrictions and DMRG initialization limits are documented in their method skills. DMRG one-site mode has a generic initializer; cold two-site/auto runs still need the absent `InitMPS_d` for higher spin. Memory/disk environments are storage choices, not different physical approximations.

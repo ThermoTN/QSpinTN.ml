@@ -6,6 +6,15 @@ Para.beta_max = 32;
 [Para.tau_step, Para.beta_c ] = GetStepFunc(Para.tau0, [1, 0.25], 16);
 Para.Full2 = true; % Full 2-site tdvp
 Para.beta_switch = 2; 
+Para.TanTRGUpdateSites = "auto"; % 1, 2, "cbe" (RSVD), or legacy Full2/beta_switch
+Para.TanTRGEnvStorage = 'memory'; % 'disk' offloads sweep environments
+Para.TanTRGEnvRoot = '/tmp/ygao'; % Set the appropriate scratch root on a server
+Para.TanTRGKeepEnv = true; % false removes this run's environment directory
+Para.CBERatio = 0.1; % RSVD expansion target: (1+ratio)*MCrit
+Para.CBEOversampling = 8;
+Para.CBEPowerIterations = 1;
+Para.CBESvdTol = 1e-12; % Expansion singular-value cutoff; DMRG SVD cutoff
+Para.CBEExpansionCap = []; % Optional temporary bond cap, >= MCrit
 % //D: bond dimension of rho(beta)
 % D_list = [Di for i steps, Dj for j steps, etc .]
 % Recommended value 200

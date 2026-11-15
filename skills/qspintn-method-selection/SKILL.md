@@ -12,8 +12,8 @@ All source paths in this skill collection are relative to the QSpinTN.ml reposit
 | Small finite Hamiltonian, thermal curves, reference spectrum | [ED](../qspintn-ed/SKILL.md) | Full Hilbert-space memory and finite-size effects |
 | Spin-1/2 chain with NN and uniform NNN bilinear exchange | [iLTRG](../qspintn-iltrg/SKILL.md) | Physical two-spin grouping for J1-J2, field/unit normalization, time-step and bond convergence |
 | Finite chain, strip, or cluster thermal MPO | [XTRG](../qspintn-xtrg/SKILL.md) | SETTN accuracy, growing bond dimension, derivative/grid coverage |
-| Thermal MPO with flexible imaginary-time schedule | [tanTRG](../qspintn-tantrg/SKILL.md) | Step schedule, bond growth, one-site transition, derivative coverage |
-| Ground state or MPS preparation | [DMRG](../qspintn-dmrg/SKILL.md) | One/two-site mode, initializer availability, competing states, sweep/bond convergence |
+| Thermal MPO with flexible imaginary-time schedule | [tanTRG](../qspintn-tantrg/SKILL.md) | Step schedule, two-site/CBE bond growth, memory/disk storage, derivative coverage |
+| Ground state or MPS preparation | [DMRG](../qspintn-dmrg/SKILL.md) | One/two-site/CBE mode, initializer availability, competing states, sweep/bond convergence |
 | Ground-state real-time correlations | [TDVP](../qspintn-dynamics/SKILL.md) | Matching ground state, observable/save hook, time and bond convergence |
 
 For material thermodynamics, start with high-temperature data and a tractable finite ED model to constrain energy scales and g factors, then compare larger sizes and suitable thermal tensor methods at lower temperature. Preserve the Hamiltonian, field direction, and [unit convention](../qspintn-units/SKILL.md) across stages. A good high-temperature fit alone does not uniquely determine the effective Hamiltonian.

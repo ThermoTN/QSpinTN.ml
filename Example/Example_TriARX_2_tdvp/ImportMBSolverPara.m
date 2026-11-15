@@ -71,6 +71,15 @@ switch Para.ManyBodySolver
         [Para.tau_step, Para.beta_c ] = GetStepFunc(Para.tau0, [1, 0.25], 16);
         Para.Full2 = false;
         Para.beta_switch = 2;
+        Para.TanTRGUpdateSites = "auto"; % 1, 2, "cbe" (RSVD), or legacy Full2/beta_switch
+        Para.TanTRGEnvStorage = 'memory'; % 'disk' offloads sweep environments
+        Para.TanTRGEnvRoot = '/tmp/ygao'; % Set the appropriate scratch root on a server
+        Para.TanTRGKeepEnv = true; % false removes this run's environment directory
+        Para.CBERatio = 0.1; % RSVD expansion target: (1+ratio)*MCrit
+        Para.CBEOversampling = 8;
+        Para.CBEPowerIterations = 1;
+        Para.CBESvdTol = 1e-12; % Expansion singular-value cutoff; DMRG SVD cutoff
+        Para.CBEExpansionCap = []; % Optional temporary bond cap, >= MCrit
         % //D: bond dimension of rho(beta)
         % D_list = [Di for i steps, Dj for j steps, etc .]
         % Recommended value 200
@@ -107,7 +116,12 @@ switch Para.ManyBodySolver
         Para.tol = 1e-14;
         Para.DMRGStepMax = 100; % Maximum sweeps per stage
         Para.DMRGSweepTol = 1e-8; % Relative energy AND change of maximum bond entropy
-        Para.DMRGUpdateSites = "auto"; % "auto": two-site -> one-site on energy rise; or 1 / 2
+        Para.DMRGUpdateSites = "auto"; % "auto": two-site -> one-site on energy rise; or 1 / 2 / "cbe" (RSVD)
+        Para.CBERatio = 0.1; % RSVD expansion target: (1+ratio)*MCrit
+        Para.CBEOversampling = 8;
+        Para.CBEPowerIterations = 1;
+        Para.CBESvdTol = 1e-12; % Expansion singular-value cutoff; DMRG SVD cutoff
+        Para.CBEExpansionCap = []; % Optional temporary bond cap, >= MCrit
         Para.DMRGEnvStorage = 'memory'; % 'memory' or 'disk', for both stages
         Para.DMRGEnvRoot = fullfile(tempdir, 'qspintn_dmrg'); % Disk cache parent
         Para.DMRGKeepEnv = true; % Retain disk environments; false cleans them on return

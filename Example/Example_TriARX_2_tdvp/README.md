@@ -69,7 +69,7 @@ No manual `load` or extraction of the state is needed. The file must contain
 An empty filename selects random initialization. Current model/field parameters
 are used to rebuild the Hamiltonian and environments; the old energy and sweep
 history are not reused. Match the old state's lattice size, local dimension,
-basis and site ordering. The new `MCrit` must cover every input bond. Two-site or
+basis and site ordering. The new `MCrit` must cover every input bond. Two-site, CBE or
 auto mode can increase the ranks up to the new cap; one-site mode cannot expand
 the supplied ranks. The loader/solver checks the tensors, restores right
 canonical form and normalizes before solving.
@@ -81,3 +81,30 @@ needs its own convergence checks.
 For filename warm starts, `RunQSpinLib_DMRG.m` saves the new MPS with a
 `-warmstart-<timestamp>` suffix and preserves the input file. Point the TDVP
 loader at that newly saved filename. Cold-start filenames are unchanged.
+
+## RSVD-CBE DMRG
+
+After importing parameters, select `Para.DMRGUpdateSites="cbe"` for controlled
+bond pre-expansion followed by single-site optimization and SVD truncation.
+It also accepts `DMRGInitialMPSFile`. The importer exposes `CBERatio`,
+`CBEOversampling`, `CBEPowerIterations`, `CBESvdTol` and `CBEExpansionCap`.
+See the [CBE contract](../../ManyBodySolver/TensorFunction/CBE.md) for temporary
+versus retained caps and [DMRG diagnostics](../../ManyBodySolver/DMRG/README.md).
+
+
+## RSVD-CBE tanTRG and disk environments
+
+The tanTRG importer exposes explicit method and storage controls. After import:
+
+```matlab
+Para.TanTRGUpdateSites = "cbe"; % 1, 2, "cbe", or "auto"
+Para.TanTRGEnvStorage = 'disk';
+Para.TanTRGEnvRoot = '/tmp/ygao';
+Para.TanTRGKeepEnv = false;
+```
+
+`"auto"` preserves `Full2`/`beta_switch`; `"cbe"` uses the importer's RSVD controls
+and retains at most `MCrit` states after each update. `CBEExpansionCap` separately
+limits temporary expansion. Disk mode stores rolling environments for all three
+methods; it does not save the full MPO or SETTN workspace. Full-result hooks
+remain separate. See [tanTRG parameters and timing](../../ManyBodySolver/tanTRG/README.md).

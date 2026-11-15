@@ -63,7 +63,7 @@ No manual `load` or extraction of the state is needed. The file must contain
 An empty filename selects random initialization. Current model/field parameters
 are used to rebuild the Hamiltonian and environments; the old energy and sweep
 history are not reused. Match the old state's lattice size, local dimension,
-basis and site ordering. The new `MCrit` must cover every input bond. Two-site or
+basis and site ordering. The new `MCrit` must cover every input bond. Two-site, CBE or
 auto mode can increase the ranks up to the new cap; one-site mode cannot expand
 the supplied ranks. The loader/solver checks the tensors, restores right
 canonical form and normalizes before solving.
@@ -81,3 +81,12 @@ save('previous.mat', 'Para', 'Rslt');
 
 The example itself continues to leave results in memory. Choose a different
 output filename when explicitly saving the new result.
+
+## RSVD-CBE DMRG
+
+After importing parameters, select `Para.DMRGUpdateSites="cbe"` for controlled
+bond pre-expansion followed by single-site optimization and SVD truncation.
+It also accepts `DMRGInitialMPSFile`. The importer exposes `CBERatio`,
+`CBEOversampling`, `CBEPowerIterations`, `CBESvdTol` and `CBEExpansionCap`.
+See the [CBE contract](../../ManyBodySolver/TensorFunction/CBE.md) for temporary
+versus retained caps and [DMRG diagnostics](../../ManyBodySolver/DMRG/README.md).

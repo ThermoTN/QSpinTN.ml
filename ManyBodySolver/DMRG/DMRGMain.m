@@ -7,7 +7,7 @@ if ~isempty(initialState)
 end
 mode = "auto";
 if isfield(Para,'DMRGUpdateSites'), mode = string(Para.DMRGUpdateSites); end
-assert(isscalar(mode) && ismember(mode,["1","2","auto"]),'DMRGUpdateSites must be 1, 2 or "auto".');
+assert(isscalar(mode) && ismember(mode,["1","2","auto","cbe"]),'DMRGUpdateSites must be 1, 2, "auto" or "cbe".');
 validateattributes(Para.DMRGStepMax,{'numeric'},{'scalar','integer','positive','finite'});
 env = DMRGEnvironmentStore(Para);
 cleanup = onCleanup(@() env.finish());
@@ -19,7 +19,7 @@ info = struct('Mode',mode,'TwoSiteSweeps',0,'OneSiteSweeps',0,'Converged',false,
     'TwoSiteLocalIterations',[],'OneSiteLocalIterations',[], ...
     'InitialStateUsed',~isempty(initialState),'InitialEnergy',[]);
 handoff = [];
-if mode~="1"
+if ismember(mode,["2","auto"])
     [T,En,EE,info.TwoSiteSweeps,reason,rise,stats] = ...
         twoSiteSweeps(Para,H,env,mode=="auto",initialState);
     info.TwoSiteSweepSeconds = stats.Seconds;
@@ -48,9 +48,10 @@ if isempty(info.InitialEnergy), info.InitialEnergy = stage.InitialEnergy; end
 info.Converged = stage.Converged;
 info.OneSiteSweepSeconds = stage.SweepSeconds;
 info.OneSiteLocalIterations = stage.LocalIterations;
+info.CBE = stage.CBE;
 if stage.Converged, info.StopReason = "converged"; end
-fprintf('DMRG_STOP sites=1 sweeps=%d total=%d reason=%s\n', ...
-    stage.Sweeps,info.TwoSiteSweeps+stage.Sweeps,info.StopReason);
+fprintf('DMRG_STOP sites=%s sweeps=%d total=%d reason=%s\n', ...
+    stage.Mode,stage.Sweeps,info.TwoSiteSweeps+stage.Sweeps,info.StopReason);
 end
 
 function [T,En,EE,i,reason,rise,stats] = twoSiteSweeps(Para,H,EnV,switchOnRise,initialState)

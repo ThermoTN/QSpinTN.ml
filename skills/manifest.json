@@ -34,13 +34,13 @@
     },
     {
       "name": "qspintn-tantrg",
-      "description": "Use QSpinTN tanTRG for imaginary-time thermal MPO evolution and assess step schedules, truncation, and derived heat capacity.",
+      "description": "Use QSpinTN one-site, two-site or RSVD-CBE tanTRG for thermal MPO evolution, memory or disk environments, and controlled sweep benchmarks.",
       "path": "qspintn-tantrg/SKILL.md",
       "method": "tanTRG"
     },
     {
       "name": "qspintn-dmrg",
-      "description": "Use QSpinTN one-site, two-site or hybrid DMRG for ground states, filename-based MPS warm starts, memory or disk environments and convergence diagnostics.",
+      "description": "Use QSpinTN one-site, two-site, RSVD-CBE or hybrid DMRG for ground states, filename-based MPS warm starts, memory or disk environments and convergence diagnostics.",
       "path": "qspintn-dmrg/SKILL.md",
       "method": "DMRG"
     },

@@ -22,7 +22,7 @@ When changing a MATLAB entry point, parameter, normalization, output grid, or kn
 
 The present skills document the checked-in interfaces and known restrictions; they do not certify numerical execution on every platform. Examples may require prepared inputs, MATLAB toolboxes, platform-specific binaries, or local saving hooks. Keep numerical validation evidence separate from documentation/schema validation.
 
-The [DMRG skill](qspintn-dmrg/SKILL.md) covers one-site, two-site and automatic
+The [DMRG skill](qspintn-dmrg/SKILL.md) covers one-site, two-site, RSVD-CBE and automatic
 mode switching, memory/disk environments, filename-based MPS warm starts, stopping
 diagnostics and MPS handoff.
 Its detailed parameter/output contract is in [the DMRG README](../ManyBodySolver/DMRG/README.md).
@@ -33,3 +33,6 @@ Its executable API declaration is `ManyBodySolver/iLTRG/interface.json`; the
 skills manifest remains a documentation-discovery contract. QSpinTN owns tensor
 state compatibility and numerical diagnostics, while consumers choose processes,
 resource limits, project files and whether a new calculation should run.
+
+The [tanTRG skill](qspintn-tantrg/SKILL.md) covers the same RSVD-CBE controls,
+thermal environment storage, norm conventions and fixed-input sweep timing.

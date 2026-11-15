@@ -1,7 +1,7 @@
 # DMRG
 
 `GetDMRGRslt(Para)` builds the MPO and solves for a ground-state MPS using
-one-site, two-site or automatic two-site to one-site sweeps. Both stages support
+one-site, two-site, RSVD-CBE or automatic two-site to one-site sweeps. All modes support
 memory and disk environments. Start with
 [Example_SpinChain_3_DMRG](../../Example/Example_SpinChain_3_DMRG/README.md).
 
@@ -17,7 +17,7 @@ apply to older callers that omit the new fields.
 | `tol` | Local Lanczos Ritz-energy change / breakdown tolerance, not an eigenvector residual threshold. |
 | `DMRGStepMax` | Maximum complete bidirectional sweeps **per stage**; auto can use up to twice this budget. |
 | `DMRGSweepTol` | Default `1e-8`; relative total-energy change and absolute change of maximum bond entropy must both pass. |
-| `DMRGUpdateSites` | Default `"auto"`; alternatively numeric `1` or `2` for a fixed mode. |
+| `DMRGUpdateSites` | Default `"auto"`; alternatively numeric `1` / `2`, or `"cbe"` for RSVD pre-expansion. |
 | `DMRGEnvStorage` | Default `'memory'`; `'disk'` writes individual rolling environment blocks. |
 | `DMRGEnvRoot` | Disk cache parent; default `fullfile(tempdir,'qspintn_dmrg')`. Ignored in memory mode. |
 | `DMRGKeepEnv` | Default `true`; `false` removes this run's disk directory on return or error. Ignored in memory mode. |
@@ -38,6 +38,23 @@ Para.saveMPS = false;
 Para.DMRGInitialMPSFile = ''; % Or 'MPS/previous.mat'
 Rslt = GetDMRGRslt(Para);
 ```
+
+## RSVD-CBE mode
+
+Set `Para.DMRGUpdateSites="cbe"` for single-site solves with controlled bond
+pre-expansion. Filename and in-memory MPS initial states work as in the other
+modes; a product state can grow new bonds. Read the
+[shared CBE algorithm and parameters](../TensorFunction/CBE.md) for `CBERatio`,
+`CBEOversampling`, `CBEPowerIterations`, `CBESvdTol`, and `CBEExpansionCap`.
+Unlike fixed one-site mode, every CBE update SVD-truncates to `MCrit` and reports
+its discarded weight. CBE has the same generic cold initializer as one-site.
+
+`DMRGInfo.Mode="cbe"`, `OneSiteSweeps`, `OneSiteSweepSeconds` and
+`OneSiteLocalIterations` describe this stage. `DMRGInfo.CBE` adds per-sweep
+`AddedStates`, `ExpansionSeconds`, `MaxExpandedBond` and `TruncationError`.
+Entropy is evaluated from the pre-truncation spectrum on the backward sweep.
+The temporary expanded bond may exceed `MCrit`; set `CBEExpansionCap=MCrit`
+when it must not. At an already full capped bond this disables expansion.
 
 ## Modes and convergence
 
@@ -63,7 +80,7 @@ abs(max(Snew)-max(Sold)) < DMRGSweepTol
 ```
 
 The entropy test compares maximum bond entropies, not the largest per-bond change.
-Two-site entropy uses the pre-truncation spectrum from `svdT`; one-site updates
+Two-site entropy uses the pre-truncation spectrum from `svdT`; fixed one-site updates
 do not truncate. The modes share a stopping rule but have different truncation
 semantics.
 
@@ -112,7 +129,7 @@ QR pass restores the center to site 1 without SVD truncation and normalizes the
 state; its previous global amplitude (`lgnorm`) is discarded. This preparation
 also applies to `DMRGMain(Para,H,initialState)` for an in-memory MPS.
 
-A larger new `MCrit` permits two-site/auto to grow the old bonds; fixed one-site
+A larger new `MCrit` permits two-site/auto/CBE to grow the old bonds; fixed one-site
 mode stays within the supplied ranks. A smaller `MCrit` than an input bond is
 rejected rather than silently truncating it. With supplied input both modes use
 the requested `DK` from the first sweep. Sweep counters and environment stores

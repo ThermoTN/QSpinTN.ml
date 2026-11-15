@@ -2,6 +2,8 @@ function [T,energy,EE,info] = DMRGOneSite(Para,H,env,handoff)
 % Finite, open-MPS single-site DMRG; H may describe periodic physical bonds.
 % A(left,right,physical), W(left,right,out,in), environment(bra,ket,MPO).
 L = Para.L; d = Para.d;
+cbe=isfield(Para,'DMRGUpdateSites') && string(Para.DMRGUpdateSites)=="cbe";
+opts=GetCBEOptions(Para);
 sweepTol = GetDMRGSweepTol(Para);
 validateattributes(L,{'numeric'},{'scalar','integer','>=',2});
 validateattributes(d,{'numeric'},{'scalar','integer','>=',2});
@@ -33,36 +35,69 @@ if sweepOffset>0
         initialEnergy,handoff.Energy);
 end
 info = struct('InitialEnergy',initialEnergy,'Sweeps',0,'Converged',false, ...
-    'SweepSeconds',[],'LocalIterations',[]);
+    'SweepSeconds',[],'LocalIterations',[],'Mode',"1", ...
+    'CBE',struct('AddedStates',[],'ExpansionSeconds',[],'MaxExpandedBond',[], 'TruncationError',[]));
+if cbe, info.Mode="cbe"; end
 bondEE = zeros(L-1,1); oldEE = 0; oldEnergy = NaN;
 for sweep=1:Para.DMRGStepMax
     ticSweep = tic;
     localIterations = 0;
+    added=0; expansionSeconds=0; maxExpanded=0; truncation=0;
     left = 1;
     for i=1:L-1
         right = env.get(i,'R');
+        if cbe
+            if i+1==L, outer=1; else, outer=env.get(i+1,'R'); end
+            timer=tic;
+            [A{i},A{i+1},n]=CBEExpandBond(A{i},A{i+1},left,W{i},W{i+1},outer,opts,1);
+            right=extendRight(outer,A{i+1},W{i+1});
+            expansionSeconds=expansionSeconds+toc(timer); added=added+n;
+            maxExpanded=max(maxExpanded,size(A{i},2));
+        end
         [center,k] = optimize(A{i},left,W{i},right,Para);
         localIterations = localIterations+k;
-        [A{i},A{i+1}] = shiftRight(center,A{i+1});
+        if cbe
+            [A{i},bond,~,~,te]=TensorSweep.split(center,1,Para.MCrit,opts.SvdTol);
+            A{i+1}=TensorSweep.absorb(A{i+1},bond,1); truncation=max(truncation,te);
+        else
+            [A{i},A{i+1}] = shiftRight(center,A{i+1});
+        end
         left = extendLeft(left,A{i},W{i}); env.put(i,'L',left);
     end
     right = 1;
     for i=L:-1:2
         left = env.get(i-1,'L');
+        if cbe
+            if i-1==1, outer=1; else, outer=env.get(i-2,'L'); end
+            timer=tic;
+            [A{i},A{i-1},n]=CBEExpandBond(A{i},A{i-1},right,W{i},W{i-1},outer,opts,-1);
+            left=extendLeft(outer,A{i-1},W{i-1});
+            expansionSeconds=expansionSeconds+toc(timer); added=added+n;
+            maxExpanded=max(maxExpanded,size(A{i},1));
+        end
         [center,k] = optimize(A{i},left,W{i},right,Para);
         localIterations = localIterations+k;
-        [A{i},A{i-1},bondEE(i-1)] = shiftLeft(center,A{i-1});
+        if cbe
+            [A{i},bond,~,bondEE(i-1),te]=TensorSweep.split(center,-1,Para.MCrit,opts.SvdTol);
+            A{i-1}=TensorSweep.absorb(A{i-1},bond,-1); truncation=max(truncation,te);
+        else
+            [A{i},A{i-1},bondEE(i-1)] = shiftLeft(center,A{i-1});
+        end
         right = extendRight(right,A{i},W{i}); env.put(i-1,'R',right);
     end
     energy = centerEnergy(A{1},W{1},right,H.lgnorm);
     assert(isfinite(energy),'DMRG:Energy','Nonfinite single-site energy at sweep %d.',sweepOffset+sweep);
     EE = max(bondEE);
     [converged,deltaS] = CheckDMRGSweep(energy,oldEnergy,EE,oldEE,sweepTol);
-    fprintf('%d, En: %.16f, DeltaS: %g\n     Trunc. Er.: 0\n     EE: %.16f\n', ...
-        sweepOffset+sweep,energy,deltaS,EE);
+    fprintf('%d, En: %.16f, DeltaS: %g\n     Trunc. Er.: %g\n     EE: %.16f\n', ...
+        sweepOffset+sweep,energy,deltaS,truncation,EE);
     info.Sweeps = sweep;
     info.SweepSeconds(sweep) = toc(ticSweep);
     info.LocalIterations(sweep) = localIterations;
+    if cbe
+        info.CBE.AddedStates(sweep)=added; info.CBE.ExpansionSeconds(sweep)=expansionSeconds;
+        info.CBE.MaxExpandedBond(sweep)=maxExpanded; info.CBE.TruncationError(sweep)=truncation;
+    end
     fprintf('Elapsed time is %.6f seconds.\n',info.SweepSeconds(sweep));
     if sweep>1 && converged
         info.Converged = true; break

@@ -1,26 +1,67 @@
 ---
 name: qspintn-tantrg
-description: Use QSpinTN tanTRG for imaginary-time thermal MPO evolution and assess step schedules, truncation, and derived heat capacity.
+description: Use QSpinTN one-site, two-site or RSVD-CBE tanTRG for thermal MPO evolution, memory or disk environments, and controlled sweep benchmarks.
 ---
 
 # tanTRG
 
-All source paths below are relative to the QSpinTN.ml repository root.
+All source paths are relative to the QSpinTN.ml repository root. Read the
+[solver contract](../../ManyBodySolver/tanTRG/README.md) for full parameters,
+storage lifetime, normalization and diagnostics.
 
-## Entry points and inputs
+`ManyBodySolver/tanTRG/GettanTRGRslt.m` builds `InitHam`, initializes `SETTN`,
+and calls `tanTRGMain`. Follow `Example/Example_SpinChain_2_tanTRG/` for geometry,
+interaction map, natural field and logging. Resolve its specific importer;
+similarly named importers configure other solvers.
 
-`ManyBodySolver/tanTRG/GettanTRGRslt.m` runs `InitHam`, `SETTN`, `InitTSRGEnV`, `twosite_tanTRG`, and `onesite_tanTRG`. This is imaginary-time thermal evolution, distinct from real-time TDVP dynamics.
+## Modes and RSVD expansion
 
-Follow `Example/Example_SpinChain_2_tanTRG/` for model, interaction map, geometry, natural field, and logging setup. Its `Example/Example_SpinChain_2_tanTRG/ImportMBSolverPara.m` provides `tau0`, `beta_max`, `tau_step`, `beta_c`, `TSRGStol`, `Full2`, `beta_switch`, `MCrit`, and SETTN/variational controls. Resolve this specific importer on the MATLAB path; similarly named importers configure different algorithms.
+`TanTRGUpdateSites="auto"` defaults to the previous `Full2`/`beta_switch` scheme.
+Numeric `1` / `2` force fixed one-site / two-site; `"cbe"` enables one-site thermal
+projector splitting with RSVD pre-expansion. This is imaginary-time evolution,
+not real-time TDVP. Fixed one-site cannot grow the initial MPO ranks.
 
-## Outputs and schedules
+The [shared CBE contract](../../ManyBodySolver/TensorFunction/CBE.md) defines
+`CBERatio`, `CBEOversampling`, `CBEPowerIterations`, `CBESvdTol`, and
+`CBEExpansionCap`. Retained bonds are capped at `MCrit`; temporary expansion can
+exceed it unless explicitly capped. CBE-tanTRG truncates with `TSRGStol`, updates
+the logarithmic norm, and includes backward bond evolution. CBE discarded
+weight is not the fixed one-site value zero.
 
-The raw result includes `beta`, `LnZ`, `En`, `M`, `EE`, `TrunErr`, and the final thermal MPO `rho`. Evolution starts at `beta=2*tau0`; each complete sweep advances beta by `4*tau`, with `ManyBodySolver/tanTRG/GetNowtau.m` selecting the schedule. `Full2` and `beta_switch` control the transition from two-site growth to one-site evolution. Inspect achieved endpoints; the last step can exceed the requested maximum.
+## Storage and outputs
 
-`GettanTRGRslt` trims the diagnostic `EE`/`TrunErr` endpoints, so these arrays need not match the thermal grid. Record the actual sampling coordinates. In the physical interface `ManyBodySolver/GetResult.m`, Cm is derived from energy by `ManyBodySolver/ThDQ_func.m` using `csaps` and interior beta coverage; it is not a raw tensor observable on every saved beta. See [units](../qspintn-units/SKILL.md).
+`TanTRGEnvStorage='memory'` is the default; `'disk'` offloads rolling environments
+for all three methods. `TanTRGEnvRoot` defaults to `/tmp/ygao`; set the actual
+server scratch location when needed. Each run creates an isolated directory.
+`TanTRGKeepEnv=true` retains it; `false` cleans on exit/error. `Rslt.EnvDir` is
+reported for disk runs. The MPO, SETTN and local Krylov workspace stay in memory.
+Environment files alone do not contain a resumable MPO checkpoint.
 
-## Convergence and hooks
+The result contains `beta`, `LnZ`, `En`, `M`, `EE`, `TrunErr`, final `rho` and
+`TanTRGInfo.Sweeps`. Beta starts at `2*tau0` and advances by `4*tau` each complete
+sweep; `GetNowtau` selects the step. The endpoint may exceed `beta_max`.
+`LnZ` and `En` are per site; the initial energy now uses the same scale/division
+as later points. `EE`/`TrunErr` now align with beta, with initial zero placeholders;
+historical files may have trimmed diagnostics and an unscaled first energy.
 
-Benchmark small finite geometries against ED, then vary `MCrit`, time-step schedule, SETTN initialization, and the two-site/one-site transition. Check Cm independently because numerical differentiation amplifies energy errors. Finite-size and MPO truncation errors are separate convergence questions.
+Hooks `GettanTRGCorr` and `savetanTRGRslt` are optional. If present, their errors
+propagate; check required observables/output explicitly. Environment storage
+and full-result saving are separate. Cm is derived downstream by
+`ManyBodySolver/ThDQ_func.m`; see [units](../qspintn-units/SKILL.md).
 
-Evolution calls `GettanTRGCorr` and `savetanTRGRslt` inside a catch block. Select or implement hooks for the desired observables and output location; missing hooks or failed writes can become warnings while evolution continues. Verify required files and observables explicitly. Hook availability and solver documentation do not by themselves provide a downstream execution adapter.
+## Fixed-input checks and timing
+
+`TanTRGSweep(rho,H,Para)` performs exactly one bidirectional sweep for explicit
+mode `1`, `2` or `"cbe"` and `Para.tau`. Use normalized right-canonical tensors
+(center at site 1), with the overall amplitude in `rho.lgnorm`. Copy the same
+input for every method. `TanTRGInfo.Sweeps` and the sweep's second output provide
+sweep time (including disk I/O), retained/expanded bonds, truncation and
+expansion statistics. Initialization and observables are outside that timer.
+
+Compare small systems with independent ED/matrix exponentials; verify memory
+and disk agreement. Then vary retained rank, time step and SETTN precision.
+Single-sweep speed ratios do not establish equal accuracy, convergence or
+large-system performance. The SVD discarded weight does not include missed
+RSVD directions or time-evolution projection error; check smaller time steps
+even when that weight is tiny. Derivative heat capacity needs its own convergence
+check; finite size and truncation errors are distinct.

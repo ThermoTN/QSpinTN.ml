@@ -47,3 +47,20 @@ Para.Geo.BCX = 'OBC';
 Para.Geo.BCY = 'PBC';
 Para.L = Para.Geo.L;
 ```
+
+## RSVD-CBE tanTRG and disk environments
+
+The tanTRG importer exposes explicit method and storage controls. After import:
+
+```matlab
+Para.TanTRGUpdateSites = "cbe"; % 1, 2, "cbe", or "auto"
+Para.TanTRGEnvStorage = 'disk';
+Para.TanTRGEnvRoot = '/tmp/ygao';
+Para.TanTRGKeepEnv = false;
+```
+
+`"auto"` preserves `Full2`/`beta_switch`; `"cbe"` uses the importer's RSVD controls
+and retains at most `MCrit` states after each update. `CBEExpansionCap` separately
+limits temporary expansion. Disk mode stores rolling environments for all three
+methods; it does not save the full MPO or SETTN workspace. Full-result hooks
+remain separate. See [tanTRG parameters and timing](../../ManyBodySolver/tanTRG/README.md).

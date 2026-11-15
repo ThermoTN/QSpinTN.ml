@@ -1,6 +1,6 @@
 ---
 name: qspintn-dmrg
-description: Use QSpinTN one-site, two-site or hybrid DMRG for ground states, filename-based MPS warm starts, memory or disk environments and convergence diagnostics.
+description: Use QSpinTN one-site, two-site, RSVD-CBE or hybrid DMRG for ground states, filename-based MPS warm starts, memory or disk environments and convergence diagnostics.
 ---
 
 # DMRG
@@ -19,7 +19,8 @@ sets `MCrit`, `DK`, `tol`, `DMRGStepMax`, `DMRGSweepTol`, `DMRGUpdateSites`,
 
 - `DMRGUpdateSites="auto"` is the default: start with two-site sweeps and switch
   to one-site after a resolved energy increase between completed sweeps. Numeric
-  `1` / `2` select fixed modes. Auto can finish without a switch.
+  `1` / `2` select fixed modes. `"cbe"` selects RSVD-controlled pre-expansion
+  and single-site solves with SVD truncation. Auto can finish without a switch.
 - `DMRGStepMax` is a separate budget per stage. `DMRGSweepTol` defaults to `1e-8`
   and tests relative energy change and change of maximum bond entropy. `tol`
   governs local Lanczos Ritz-energy change/breakdown, not a residual norm.
@@ -47,10 +48,28 @@ old Hamiltonian, energy, environments or sweep counters are reused. Match `L`,
 and requires each input bond to fit `MCrit`, then restores right canonical form
 with QR and normalizes without SVD truncation. This also applies to an in-memory
 MPS passed to `DMRGMain(Para,H,initialState)`. A larger cap allows two-site/auto
-bond growth; fixed one-site sweeps cannot expand the supplied ranks. A smaller
+bond growth, as does CBE; fixed one-site sweeps cannot expand the supplied ranks. A smaller
 cap than the old bonds is rejected. Supplied states use full `DK` from the first
 sweep; cold two-site initialization uses `DK=2` initially. This is a new solve,
 not checkpoint resumption.
+
+## RSVD-CBE controls
+
+Use the [shared CBE contract](../../ManyBodySolver/TensorFunction/CBE.md).
+`CBERatio=.1`, `CBEOversampling=8`, `CBEPowerIterations=1` and `CBESvdTol=1e-12`
+are defaults. `CBEExpansionCap=[]` permits a temporary target
+`ceil((1+CBERatio)*MCrit)`; set it to `MCrit` for a strict working-bond cap, noting
+that already saturated bonds then cannot expand. The post-update retained cap
+is always `MCrit`. The algorithm projects out both kept spaces, selects residual
+directions by RSVD, preserves the input state during expansion, then truncates
+after optimization. It does not use random padding as a substitute for CBE.
+
+CBE uses the generic one-site initializer and accepts filename warm starts.
+`OneSiteSweepSeconds` / `OneSiteLocalIterations` include CBE solves;
+`DMRGInfo.CBE` records expansion time, added states, maximum temporary bond and
+nonzero discarded weights. Fixed one-site zero-truncation semantics do not apply.
+For timing, restart each method from the same saved input, report actual bonds,
+and separate initialization from a complete bidirectional sweep.
 
 ## Read outputs and prepare dynamics
 

@@ -60,6 +60,7 @@ q{1} = F_mtimes(Norm^(-1), q{1});
 for k = 1:K
     % H*q_k
     q{k+1} = F_handle(q{k});
+    actionNorm = F_norm(q{k+1});
     % <q_k|H|q_k>
     T(k,k) = F_innerprod(q{k},q{k+1});
     % main step of Lanczos, update next Lanczos base
@@ -76,8 +77,8 @@ for k = 1:K
     coef = expm(delta*T(1:k, 1:k))*[1; zeros(k - 1, 1)];
 
     % check linear independence
-    if abs(T(k, k + 1)/T(1, 1)) < tol
-        Info.Err = abs(T(k, k + 1)/T(1, 1));
+    if abs(T(k, k + 1)) <= tol*max(1,actionNorm)
+        Info.Err = abs(T(k, k + 1))/max(1,actionNorm);
         break;
     end
     

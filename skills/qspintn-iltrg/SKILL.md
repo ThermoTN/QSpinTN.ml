@@ -50,9 +50,11 @@ four physical spins. This construction is documented in the API guide and
 does not convert arbitrary finite interaction maps into infinite-chain input.
 
 The `forward.v1` extension is additive: inspect `interface.json` profiles for
-range-two capability. autoQMagen's existing formal fitting adapter is still
-nearest-neighbor-only until its own ModelSpec mapping and capability checks are
-updated and tested. A skill or a newer QSpinTN checkout alone does not enable it.
+range-two capability. autoQMagen's managed-fitting development update maps
+uniform distance-1/2 ModelSpec terms into this API, with per-physical-spin
+normalization and candidate-specific energy scaling. Older autoQMagen versions
+may still be NN-only: check both the caller capability and this interface;
+a newer QSpinTN checkout or a skill alone does not extend an older adapter.
 
 ## Numerical choices
 
@@ -89,7 +91,13 @@ updated and tested. A skill or a newer QSpinTN checkout alone does not enable it
   at a floating-point endpoint it can reduce the input step by a few ULPs,
   recording that adjustment instead of allowing extrapolation.
 - Compare multiple D_max and tau values at common physical temperatures.
-  Varying both together measures combined change, not separate error sources.
+  autoQMagen's default convergence check compares a baseline with one jointly
+  refined calculation: double D_max and halve the baseline's actually executed
+  tau, including any temperature-coverage adjustment. Keep physical parameters,
+  E0, fields and comparison temperatures fixed, and increase/check N_max for the
+  smaller step. This is a two-setting comparison; varying both together measures
+  combined change, not separate truncation and time-step error sources. Stored
+  separate-D/separate-tau checks cannot be combined into an uncomputed joint curve.
   The d=4 block path costs more and truncates across different cuts; do not
   transfer an NN convergence claim solely because D_max has the same value.
 - Inspect transfer residuals, actual bond dimensions, cutoff warnings and
